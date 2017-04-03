@@ -7,7 +7,7 @@ from resources.user import UserRegistration,UserList,UserUpdate
 from resources.player import Player,PlayerList
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///myteam.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
@@ -23,4 +23,4 @@ api.add_resource(UserList,'/user')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.9',port = 5000,debug=True)
+    app.run(port = 5000,debug=True)
