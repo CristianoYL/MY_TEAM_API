@@ -20,7 +20,7 @@ class UserRegistration(Resource):
                             .format(credentials['email'])
             }, 400
 
-        user = UserModel(**credentials)
+        user = UserModel(None,**credentials)
 
         try:
             user.save_to_db()
