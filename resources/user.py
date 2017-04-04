@@ -4,13 +4,21 @@ from flask_jwt import jwt_required
 
 from models.user import UserModel
 
-class UserRegistration(Resource):
+class User(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('email', type=str, required=True,help="Email cannot be blank.")
     parser.add_argument('password', type=str, required=True, help="Password cannot be blank.")
 
     @classmethod
-    def post(cls):   #register
+    def get(cls):   #view all users
+        users = []
+        result = UserModel.find_all()
+        for user in result:
+            users.append({'id':user.id,'email':user.email})
+        return {'users':users},200
+
+    @classmethod
+    def post(cls):   #register user
         credentials = cls.parser.parse_args()
 
         user = UserModel.find_by_email(credentials['email'])
@@ -35,6 +43,7 @@ class UserUpdate(Resource):
 
     @classmethod
     @jwt_required()
+    ## TODO: use jwt info to identify user, not the email param.
     def post(cls,email):   #change password
         new_password = cls.parser.parse_args()['password']
         user = UserModel.find_by_email(email)
@@ -50,13 +59,3 @@ class UserUpdate(Resource):
             return {'message':'password updated!'}, 200
         # if account doesn't exists
         return {'message':'Account not found!'}, 404
-
-
-class UserList(Resource):
-    @classmethod
-    def get(cls):   #view all users
-        users = []
-        result = UserModel.find_all()
-        for user in result:
-            users.append({'id':user.id,'email':user.email})
-        return {'users':users},200
