@@ -8,6 +8,7 @@ class Player(Resource):
     #(id INTEGERPRIMARY KEY, email text, club text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
     parser = reqparse.RequestParser()
     parser.add_argument('club', type=str, required=False,)
+    parser.add_argument('role', type=str, required=False,)
     parser.add_argument('firstName', type=str, required=True, help="This field cannot be blank.")
     parser.add_argument('lastName', type=str, required=True, help="This field cannot be blank.")
     parser.add_argument('displayName', type=str, required=True, help="This field cannot be blank.")
@@ -63,6 +64,7 @@ class Player(Resource):
             player = PlayerModel(None,email,**data)    # create a player model first
         else:
             player.club = data['club']
+            player.role = data['role']
             player.firstName = data['firstName']
             player.lastName = data['lastName']
             player.displayName = data['displayName']

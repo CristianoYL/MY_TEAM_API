@@ -6,6 +6,7 @@ class PlayerModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50))
     club = db.Column(db.String(50))
+    role = db.Column(db.String(10))
     firstName = db.Column(db.String(50))
     lastName = db.Column(db.String(50))
     displayName = db.Column(db.String(50))
@@ -16,11 +17,12 @@ class PlayerModel(db.Model):
     leftFooted = db.Column(db.Boolean)
     avatar = db.Column(db.Integer)
 
-    def __init__(self,_id,email,club,firstName,lastName,displayName,
+    def __init__(self,_id,email,club,role,firstName,lastName,displayName,
                 age,height,weight,phone,leftFooted,avatar):
         self.id = _id
         self.email = email
         self.club = club
+        self.role = role
         self.firstName = firstName
         self.lastName = lastName
         self.displayName = displayName
@@ -36,6 +38,7 @@ class PlayerModel(db.Model):
             "id" : self.id,
             "email" : self.email,
             "club" : self.club,
+            "role" : self.role,
             "firstName" : self.firstName,
             "lastName" : self.lastName,
             "displayName" : self.displayName,
