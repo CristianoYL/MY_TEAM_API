@@ -4,7 +4,7 @@ class UserModel(db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(50))
+    email = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(50))
 
     def __init__(self,_id,email,password):
