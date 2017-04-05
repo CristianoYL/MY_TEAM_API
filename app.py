@@ -11,6 +11,7 @@ from resources.club import Club,ClubByID,ClubByName
 from resources.tournament import Tournament,TournamentByID,TournamentByName
 from resources.squad import Squad,SquadPlayer,SquadTotal
 from resources.stats import Stats,StatsList
+from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
@@ -39,6 +40,9 @@ api.add_resource(SquadPlayer,'/squad/<string:tournamentID>,<string:clubID>')
 api.add_resource(SquadTotal,'/squad')
 api.add_resource(Stats,'/stats/<string:tournamentID>,<string:playerID>')
 api.add_resource(StatsList,'/stats')
+api.add_resource(Teamsheet,'/teamsheet/<string:clubID>,<string:playerID>')
+api.add_resource(TeamsheetByPlayer,'/teamsheet/player/<string:playerID>')
+api.add_resource(TeamsheetByClub,'/teamsheet/club/<string:clubID>')
 
 if __name__ == '__main__' :
     from db import db
