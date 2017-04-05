@@ -10,6 +10,7 @@ from resources.player import Player,PlayerList
 from resources.club import Club,ClubByID,ClubByName
 from resources.tournament import Tournament,TournamentByID,TournamentByName
 from resources.squad import Squad,SquadPlayer,SquadTotal
+from resources.stats import Stats,StatsList
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
@@ -17,9 +18,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
 
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 jwt = JWT(app,authenticate,identity)    #/auth
 
@@ -36,8 +37,10 @@ api.add_resource(TournamentByName,'/tournament/name/<string:name>')
 api.add_resource(Squad,'/squad')
 api.add_resource(SquadPlayer,'/squad/<string:tournamentID>,<string:clubID>')
 api.add_resource(SquadTotal,'/squad')
+api.add_resource(Stats,'/stats/<string:tournamentID>,<string:playerID>')
+api.add_resource(StatsList,'/stats')
 
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(port = 5000,debug=True)
+    app.run(host = '192.168.1.5',port = 5000,debug=True)
