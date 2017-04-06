@@ -19,9 +19,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 
 jwt = JWT(app,authenticate,identity)    #/auth
 
@@ -48,4 +48,4 @@ api.add_resource(TeamsheetList,'/teamsheet')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '127.0.0.1',port = 5000,debug=True)
+    app.run(host = '192.168.1.3',port = 5000,debug=True)
