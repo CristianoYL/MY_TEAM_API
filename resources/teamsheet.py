@@ -5,6 +5,7 @@ from datetime import date,datetime
 
 from models.teamsheet import TeamsheetModel
 from models.club import ClubModel
+from models.player import PlayerModel
 
 class Teamsheet(Resource):
     # (clubID,playerID,memberSince)
@@ -88,11 +89,11 @@ class TeamsheetByClub(Resource):
     parser.add_argument('isActive', type=bool, required=False)
     def get(self,clubID):
         data = self.parser.parse_args()
-        if data['isActive'] and data['isActive'] == True:
-            teams = TeamsheetModel.find_club_active_player(clubID)
+        if data['isActive']:
+            players = TeamsheetModel.find_club_active_player(clubID)
         else:
-            teams = TeamsheetModel.find_by_club(clubID)
-        return {'teamsheet':[teamsheet.json() for teamsheet in teams]},200
+            players = TeamsheetModel.find_by_club(clubID)
+        return {'teamsheet':[PlayerModel.find_by_id(teamsheet.playerID).json() for teamsheet in players]},200
 
 
 class TeamsheetList(Resource):
