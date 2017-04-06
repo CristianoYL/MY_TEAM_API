@@ -4,6 +4,7 @@ from flask_jwt import jwt_required
 from datetime import date,datetime
 
 from models.teamsheet import TeamsheetModel
+from models.club import ClubModel
 
 class Teamsheet(Resource):
     # (clubID,playerID,memberSince)
@@ -78,7 +79,7 @@ class TeamsheetByPlayer(Resource):
     # (clubID,playerID,memberSince,number,isActive)
     def get(self,playerID):
         teams = TeamsheetModel.find_by_player(playerID)
-        return {'teamsheet':[teamsheet.json() for teamsheet in teams]},200
+        return {'teamsheet':[ClubModel.find_by_id(teamsheet.clubID).json() for teamsheet in teams]},200
 
 
 class TeamsheetByClub(Resource):
@@ -91,4 +92,11 @@ class TeamsheetByClub(Resource):
             teams = TeamsheetModel.find_club_active_player(clubID)
         else:
             teams = TeamsheetModel.find_by_club(clubID)
+        return {'teamsheet':[teamsheet.json() for teamsheet in teams]},200
+
+
+class TeamsheetList(Resource):
+    # (clubID,playerID,memberSince,number,isActive)
+    def get(self):
+        teams = TeamsheetModel.find_all()
         return {'teamsheet':[teamsheet.json() for teamsheet in teams]},200
