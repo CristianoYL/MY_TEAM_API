@@ -2,13 +2,13 @@ from db import db
 
 class StatsModel(db.Model):
     __tablename__ = 'stats'
-    # (tournamentID, clubID, playerID, attendence, appearance, start, goal,
+    # (tournamentID, clubID, playerID, attendance, appearance, start, goal,
     #   penalty, penaltyShootout, penaltyTaken, ownGoal, header, weakFootGoal
     #   otherGoal, assist, yellow, red, cleanSheet, penaltySaved)
     tournamentID = db.Column(db.Integer, db.ForeignKey('tournament.id'), primary_key=True)
     clubID = db.Column(db.Integer, db.ForeignKey('club.id'), primary_key=True)
     playerID = db.Column(db.Integer, db.ForeignKey('player.id'), primary_key=True)
-    attendence = db.Column(db.Integer)
+    attendance = db.Column(db.Integer)
     appearance = db.Column(db.Integer)
     start = db.Column(db.Integer)
     goal = db.Column(db.Integer)
@@ -25,13 +25,13 @@ class StatsModel(db.Model):
     cleanSheet = db.Column(db.Integer)
     penaltySaved = db.Column(db.Integer)
 
-    def __init__(self,tournamentID, clubID, playerID, attendence, appearance,
+    def __init__(self,tournamentID, clubID, playerID, attendance, appearance,
             start, goal,penalty, penaltyShootout, penaltyTaken, ownGoal,
             header,weakFootGoal,otherGoal,assist, yellow,red, cleanSheet, penaltySaved):
         self.tournamentID = tournamentID
         self.clubID = clubID
         self.playerID = playerID
-        self.attendence = attendence
+        self.attendance = attendance
         self.appearance = appearance
         self.start = start
         self.goal = goal
@@ -53,7 +53,7 @@ class StatsModel(db.Model):
             'tournamentID' : self.tournamentID,
             'clubID' : self.clubID,
             'playerID' : self.playerID,
-            'attendence' : self.attendence,
+            'attendance' : self.attendance,
             'appearance' : self.appearance,
             'start' : self.start,
             'goal' : self.goal,
@@ -95,7 +95,7 @@ class StatsModel(db.Model):
     def find_tournament_total_stats(cls,tournamentID):
         tournament_stats = {
             'tournamentID' : tournamentID,
-            'attendence' : 0,
+            'attendance' : 0,
             'appearance' : 0,
             'start' : 0,
             'goal' : 0,
@@ -114,7 +114,7 @@ class StatsModel(db.Model):
         }
         total_stats = cls.query.filter_by(tournamentID=tournamentID)
         for stats in total_stats:
-            tournament_stats['attendence'] += stats['attendence']
+            tournament_stats['attendance'] += stats['attendance']
             tournament_stats['appearance'] += stats['appearance']
             tournament_stats['start'] += stats['start']
             tournament_stats['goal'] += stats['goal']
@@ -136,7 +136,7 @@ class StatsModel(db.Model):
     def find_club_total_stats(cls,clubID):
         club_stats = {
             'clubID' : clubID,
-            'attendence' : 0,
+            'attendance' : 0,
             'appearance' : 0,
             'start' : 0,
             'goal' : 0,
@@ -155,7 +155,7 @@ class StatsModel(db.Model):
         }
         club_total_stats = cls.query.filter_by(tournamentID=tournamentID)
         for stats in club_total_stats:
-            club_stats['attendence'] += stats['attendence']
+            club_stats['attendance'] += stats['attendance']
             club_stats['appearance'] += stats['appearance']
             club_stats['start'] += stats['start']
             club_stats['goal'] += stats['goal']
@@ -177,7 +177,7 @@ class StatsModel(db.Model):
     def find_player_total_stats(cls,playerID):
         player_stats = {
             'playerID' : playerID,
-            'attendence' : 0,
+            'attendance' : 0,
             'appearance' : 0,
             'start' : 0,
             'goal' : 0,
@@ -196,7 +196,7 @@ class StatsModel(db.Model):
         }
         total_stats = cls.query.filter_by(playerID=playerID)
         for stats in total_stats:
-            player_stats['attendence'] += stats.attendence
+            player_stats['attendance'] += stats.attendance
             player_stats['appearance'] += stats.appearance
             player_stats['start'] += stats.start
             player_stats['goal'] += stats.goal
@@ -216,7 +216,7 @@ class StatsModel(db.Model):
 
     @classmethod
     def get_updated_stats(cls,prev_stats,vector):
-        prev_stats.attendence += vector.attendence
+        prev_stats.attendance += vector.attendance
         prev_stats.appearance += vector.appearance
         prev_stats.start += vector.start
         prev_stats.goal += vector.goal

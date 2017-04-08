@@ -5,11 +5,11 @@ from flask_jwt import jwt_required
 from models.stats import StatsModel
 
 class Stats(Resource):
-    # (tournamentID, playerID, attendence, appearance, start, goal,
+    # (tournamentID, playerID, attendance, appearance, start, goal,
     #   penalty, penaltyShootout, penaltyTaken, ownGoal, header, weakFootGoal,
     #   assist, yellow, red, cleanSheet, penaltySaved)
     parser = reqparse.RequestParser()
-    parser.add_argument('attendence', type=int, required=True, help="This field cannot be blank.")
+    parser.add_argument('attendance', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('appearance', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('start', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('goal', type=int, required=True, help="This field cannot be blank.")
