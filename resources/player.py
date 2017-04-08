@@ -7,10 +7,10 @@ from models.player import PlayerModel
 class Player(Resource):
     #(id INTEGERPRIMARY KEY, email text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
     parser = reqparse.RequestParser()
-    parser.add_argument('role', type=str, required=False,)
-    parser.add_argument('firstName', type=str, required=True, help="This field cannot be blank.")
-    parser.add_argument('lastName', type=str, required=True, help="This field cannot be blank.")
-    parser.add_argument('displayName', type=str, required=True, help="This field cannot be blank.")
+    parser.add_argument('role', type=str, required=True,help="The player's role cannot be blank.")
+    parser.add_argument('firstName', type=str, required=True, help="The player's firtname cannot be blank.")
+    parser.add_argument('lastName', type=str, required=True, help="The player's lastname cannot be blank.")
+    parser.add_argument('displayName', type=str, required=False)
     parser.add_argument('age', type=int, required=False)
     parser.add_argument('height',type=float, required=False)
     parser.add_argument('weight',type=float, required=False)
@@ -31,8 +31,9 @@ class Player(Resource):
             return {'message': 'player <{}> already exists'.format(email)}, 400
         # if not exist, proceed to create
         data = self.parser.parse_args()
+        if not data['displayName']:
+            data['displayName'] = data['firstName'] + ' ' + data['lastName']
         player = PlayerModel(None,email,**data)
-
         try:        # try to insert
             player.save_to_db()
         except:
@@ -65,14 +66,20 @@ class Player(Resource):
             player.role = data['role']
             player.firstName = data['firstName']
             player.lastName = data['lastName']
-            player.displayName = data['displayName']
-            player.age = data['age']
-            player.height = data['height']
-            player.weight = data['weight']
-            player.phone = data['phone']
-            player.leftFooted = data['leftFooted']
-            player.avatar = data['avatar']
-
+            if data['displayName']:
+                player.displayName = data['displayName']
+            if data['age']:
+                player.age = data['age']
+            if data['height']:
+                player.height = data['height']
+            if data['weight']:
+                player.weight = data['weight']
+            if data['phone']:
+                player.phone = data['phone']
+            if data['leftFooted']:
+                player.leftFooted = data['leftFooted']
+            if data['avatar']:
+                player.avatar = data['avatar']
         try:
             player.save_to_db()
         except:

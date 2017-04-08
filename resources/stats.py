@@ -6,8 +6,8 @@ from models.stats import StatsModel
 
 class Stats(Resource):
     # (tournamentID, playerID, attendence, appearance, start, goal,
-    #   penalty, penaltyShootout, penaltyTaken, ownGoal, header, assist, yellow,
-    #   red, cleanSheet, penaltySaved)
+    #   penalty, penaltyShootout, penaltyTaken, ownGoal, header, weakFootGoal,
+    #   assist, yellow, red, cleanSheet, penaltySaved)
     parser = reqparse.RequestParser()
     parser.add_argument('attendence', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('appearance', type=int, required=True, help="This field cannot be blank.")
@@ -18,23 +18,25 @@ class Stats(Resource):
     parser.add_argument('penaltyTaken', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('ownGoal', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('header', type=int, required=True, help="This field cannot be blank.")
+    parser.add_argument('weakFootGoal', type=int, required=True, help="This field cannot be blank.")
+    parser.add_argument('otherGoal', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('assist', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('yellow', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('red', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('cleanSheet', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('penaltySaved', type=int, required=True, help="This field cannot be blank.")
 
-    def get(self,tournamentID,playerID):  # get stats
-        stats = StatsModel.find_player_tournament_stats(tournamentID,playerID)
+    def get(self,tournamentID,clubID,playerID):  # get stats
+        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
         if stats:
             return stats.json(), 200
         return {'message' : 'stats not found.'}, 404
 
-    def post(self,tournamentID,playerID): # create a new stats
-        stats = StatsModel.find_stats(tournamentID,playerID)
+    def post(self,tournamentID,clubID,playerID): # create a new stats
+        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
         if stats:
             return {'message' : 'stats already exists.'}, 400
-        stats = StatsModel(tournamentID,playerID,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+        stats = StatsModel(tournamentID,clubID,playerID,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
         try:
             stats.save_to_db()
             return stats.json(), 201
@@ -42,8 +44,8 @@ class Stats(Resource):
             traceback.print_exc()
             return {'message' : 'Internal server error, create stats failed.'}, 500
 
-    def delete(self,tournamentID,playerID): # delete a stats
-        stats = StatsModel.find_stats(tournamentID,playerID)
+    def delete(self,tournamentID,clubID,playerID): # delete a stats
+        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
         if not stats:
             return {'message' : 'stats not found.'}, 404
         try:
@@ -53,14 +55,13 @@ class Stats(Resource):
             traceback.print_exc()
             return {'message' : 'Internal server error, delete stats failed.'}, 500
 
-    def put(self,tournamentID,playerID):  # update an existing stats
-        stats = StatsModel.find_stats(tournamentID,playerID)
-        data = self.parser.parse_args()
-
+    def put(self,tournamentID,clubID,playerID):  # update an existing stats
+        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
         if not stats:
             return {'message' : 'stats not found'}, 404
 
-        vector = StatsModel(tournamentID,playerID,**data)
+        data = self.parser.parse_args()
+        vector = StatsModel(tournamentID,clubID,playerID,**data)
         new_stats = StatsModel.get_updated_stats(stats,vector)
 
         try:
@@ -75,3 +76,12 @@ class StatsList(Resource):
 
     def get(self):
         return {'stats':[stats.json() for stats in StatsModel.find_all()]},200
+
+
+class StatsByPlayer(Resource):
+
+    def get(self,playerID):
+        try:
+            return StatsModel.find_player_total_stats(playerID), 200
+        except:
+            return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500

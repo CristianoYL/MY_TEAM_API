@@ -32,6 +32,7 @@ class Teamsheet(Resource):
                         memberSince = datetime.strptime(data['memberSince'], '%Y-%m-%d')
                     except ValueError:
                         return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
+                # new member is active by default
                 if not data['isActive']:
                     data['isActive'] = True
                 member = TeamsheetModel(clubID,playerID,memberSince,data['number'],data['isActive'])
@@ -66,7 +67,7 @@ class Teamsheet(Resource):
                         return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
                 if data['number']:
                     member.number = data['number']
-                if data['isActive']:
+                if data['isActive'] is not None:
                     member.isActive = data['isActive']
                 member.save_to_db()
                 return member.json() ,200

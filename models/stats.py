@@ -3,8 +3,8 @@ from db import db
 class StatsModel(db.Model):
     __tablename__ = 'stats'
     # (tournamentID, clubID, playerID, attendence, appearance, start, goal,
-    #   penalty, penaltyShootout, penaltyTaken, ownGoal, header, assist, yellow,
-    #   red, cleanSheet, penaltySaved)
+    #   penalty, penaltyShootout, penaltyTaken, ownGoal, header, weakFootGoal
+    #   otherGoal, assist, yellow, red, cleanSheet, penaltySaved)
     tournamentID = db.Column(db.Integer, db.ForeignKey('tournament.id'), primary_key=True)
     clubID = db.Column(db.Integer, db.ForeignKey('club.id'), primary_key=True)
     playerID = db.Column(db.Integer, db.ForeignKey('player.id'), primary_key=True)
@@ -17,6 +17,8 @@ class StatsModel(db.Model):
     penaltyTaken = db.Column(db.Integer)
     ownGoal = db.Column(db.Integer)
     header = db.Column(db.Integer)
+    weakFootGoal = db.Column(db.Integer)
+    otherGoal = db.Column(db.Integer)
     assist = db.Column(db.Integer)
     yellow = db.Column(db.Integer)
     red = db.Column(db.Integer)
@@ -25,7 +27,7 @@ class StatsModel(db.Model):
 
     def __init__(self,tournamentID, clubID, playerID, attendence, appearance,
             start, goal,penalty, penaltyShootout, penaltyTaken, ownGoal,
-            header,assist, yellow,red, cleanSheet, penaltySaved):
+            header,weakFootGoal,otherGoal,assist, yellow,red, cleanSheet, penaltySaved):
         self.tournamentID = tournamentID
         self.clubID = clubID
         self.playerID = playerID
@@ -38,6 +40,8 @@ class StatsModel(db.Model):
         self.penaltyTaken = penaltyTaken
         self.ownGoal = ownGoal
         self.header = header
+        self.weakFootGoal = weakFootGoal
+        self.otherGoal = otherGoal
         self.assist = assist
         self.yellow = yellow
         self.red = red
@@ -58,6 +62,8 @@ class StatsModel(db.Model):
             'penaltyTaken' : self.penaltyTaken,
             'ownGoal' : self.ownGoal,
             'header' : self.header,
+            'weakFootGoal' : self.weakFootGoal,
+            'otherGoal' : self.otherGoal,
             'assist' : self.assist,
             'yellow' : self.yellow,
             'red' : self.red,
@@ -70,8 +76,8 @@ class StatsModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find_player_tournament_stats(cls,tournamentID,playerID):
-        return cls.query.filter_by(tournamentID=tournamentID,playerID=playerID).first()
+    def find_stats(cls,tournamentID,clubID,playerID):
+        return cls.query.filter_by(tournamentID=tournamentID,clubID=clubID,playerID=playerID).first()
 
     @classmethod
     def find_stats_by_tournament(cls,tournamentID):
@@ -98,6 +104,8 @@ class StatsModel(db.Model):
             'penaltyTaken' : 0,
             'ownGoal' : 0,
             'header' : 0,
+            'weakFootGoal' : 0,
+            'otherGoal' : 0,
             'assist' : 0,
             'yellow' : 0,
             'red' : 0,
@@ -115,6 +123,8 @@ class StatsModel(db.Model):
             tournament_stats['penaltyTaken'] += stats['penaltyTaken']
             tournament_stats['ownGoal'] += stats['ownGoal']
             tournament_stats['header'] += stats['header']
+            tournament_stats['weakFootGoal'] += stats['weakFootGoal']
+            tournament_stats['otherGoal'] += stats['otherGoal']
             tournament_stats['assist'] += stats['assist']
             tournament_stats['yellow'] += stats['yellow']
             tournament_stats['red'] += stats['red']
@@ -135,6 +145,8 @@ class StatsModel(db.Model):
             'penaltyTaken' : 0,
             'ownGoal' : 0,
             'header' : 0,
+            'weakFootGoal' : 0,
+            'otherGoal' : 0,
             'assist' : 0,
             'yellow' : 0,
             'red' : 0,
@@ -152,6 +164,8 @@ class StatsModel(db.Model):
             club_stats['penaltyTaken'] += stats['penaltyTaken']
             club_stats['ownGoal'] += stats['ownGoal']
             club_stats['header'] += stats['header']
+            club_stats['weakFootGoal'] += stats['weakFootGoal']
+            club_stats['otherGoal'] += stats['otherGoal']
             club_stats['assist'] += stats['assist']
             club_stats['yellow'] += stats['yellow']
             club_stats['red'] += stats['red']
@@ -172,6 +186,8 @@ class StatsModel(db.Model):
             'penaltyTaken' : 0,
             'ownGoal' : 0,
             'header' : 0,
+            'weakFootGoal' : 0,
+            'otherGoal' : 0,
             'assist' : 0,
             'yellow' : 0,
             'red' : 0,
@@ -180,20 +196,22 @@ class StatsModel(db.Model):
         }
         total_stats = cls.query.filter_by(playerID=playerID)
         for stats in total_stats:
-            player_stats['attendence'] += stats['attendence']
-            player_stats['appearance'] += stats['appearance']
-            player_stats['start'] += stats['start']
-            player_stats['goal'] += stats['goal']
-            player_stats['penalty'] += stats['penalty']
-            player_stats['penaltyShootout'] += stats['penaltyShootout']
-            player_stats['penaltyTaken'] += stats['penaltyTaken']
-            player_stats['ownGoal'] += stats['ownGoal']
-            player_stats['header'] += stats['header']
-            player_stats['assist'] += stats['assist']
-            player_stats['yellow'] += stats['yellow']
-            player_stats['red'] += stats['red']
-            player_stats['cleanSheet'] += stats['cleanSheet']
-            player_stats['penaltySaved'] += stats['penaltySaved']
+            player_stats['attendence'] += stats.attendence
+            player_stats['appearance'] += stats.appearance
+            player_stats['start'] += stats.start
+            player_stats['goal'] += stats.goal
+            player_stats['penalty'] += stats.penalty
+            player_stats['penaltyShootout'] += stats.penaltyShootout
+            player_stats['penaltyTaken'] += stats.penaltyTaken
+            player_stats['ownGoal'] += stats.ownGoal
+            player_stats['header'] += stats.header
+            player_stats['weakFootGoal'] += stats.weakFootGoal
+            player_stats['otherGoal'] += stats.otherGoal
+            player_stats['assist'] += stats.assist
+            player_stats['yellow'] += stats.yellow
+            player_stats['red'] += stats.red
+            player_stats['cleanSheet'] += stats.cleanSheet
+            player_stats['penaltySaved'] += stats.penaltySaved
         return player_stats
 
     @classmethod
@@ -207,6 +225,8 @@ class StatsModel(db.Model):
         prev_stats.penaltyTaken += vector.penaltyTaken
         prev_stats.ownGoal += vector.ownGoal
         prev_stats.header += vector.header
+        prev_stats.weakFootGoal += vector.weakFootGoal
+        prev_stats.otherGoal += vector.otherGoal
         prev_stats.assist += vector.assist
         prev_stats.yellow += vector.yellow
         prev_stats.red += vector.red
