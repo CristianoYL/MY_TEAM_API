@@ -4,12 +4,14 @@ from flask_jwt import jwt_required
 from datetime import datetime
 
 from models.result import ResultModel
+from models.club import ClubModel
+from models.tournament import TournamentModel
 
 class Result(Resource):
-    # (id,home,away,tournamentID,date,stage,ftScore,extraScore,penScore,info,homeEvents,awayEvents)
+    # (id,homeID,awayID,tournamentID,date,stage,ftScore,extraScore,penScore,info,homeEvents,awayEvents)
     parser = reqparse.RequestParser()
-    parser.add_argument('home', type=int, required=True,help="The home team cannot be blank.")
-    parser.add_argument('away', type=int, required=True,help="The away team cannot be blank.")
+    parser.add_argument('homeID', type=int, required=True,help="The home team ID cannot be blank.")
+    parser.add_argument('awayID', type=int, required=True,help="The away team ID cannot be blank.")
     parser.add_argument('tournamentID', type=int, required=True,help="The tournament cannot be blank.")
     parser.add_argument('date', type=str, required=True,help="The date cannot be blank.")
     parser.add_argument('stage', type=str, required=False)
@@ -34,10 +36,23 @@ class Result(Resource):
         except ValueError:
             return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
 
+        homeClub = ClubModel.find_by_id(data["homeID"])
+        homeName = homeClub.name
+
+        awayClub = ClubModel.find_by_id(data["awayID"])
+        awayName = awayClub.name
+
+        tournament = TournamentModel.find_by_id(data["tournamentID"])
+        tournamentName = tournament.name
+
+        data["homeName"] = homeName
+        data["awayName"] = awayName
+        data["tournamentName"] = tournamentName
+
         unique_keys = {
             'tournamentID' : data['tournamentID'],
-            'home' : data['home'],
-            'away' : data['away'],
+            'homeID' : data['homeID'],
+            'awayID' : data['awayID'],
             'date' : data['date'],
             'stage' : data['stage'],
         }
@@ -65,8 +80,8 @@ class Result(Resource):
 
         unique_keys = {
             'tournamentID' : data['tournamentID'],
-            'home' : data['home'],
-            'away' : data['away'],
+            'homeID' : data['homeID'],
+            'awayID' : data['awayID'],
             'date' : data['date'],
             'stage' : data['stage'],
         }
@@ -93,8 +108,8 @@ class Result(Resource):
 
         unique_keys = {
             'tournamentID' : data['tournamentID'],
-            'home' : data['home'],
-            'away' : data['away'],
+            'homeID' : data['homeID'],
+            'awayID' : data['awayID'],
             'date' : data['date'],
             'stage' : data['stage'],
         }
@@ -125,7 +140,15 @@ class Result(Resource):
 
 
 class ResultByClub(Resource):
-    # (id,home,away,tournamentID,date,stage,ftScore,extraScore,penScore,info)
+    # (id,home,awayID,tournamentID,date,stage,ftScore,extraScore,penScore,info)
 
     def get(self,clubID): # get team's results
-        return {'results':[result.json() for result in ResultModel.find_by_club(clubID)]}, 200
+        return {"results" : [result.json() for result in ResultModel.find_by_club(clubID)]}, 200
+
+class ResultByHome(Resource):
+    def get(self, clubID): #get team results for all home game
+        return {"results" : [result.json() for result in ResultModel.find_by_home(clubID)]}, 200
+
+class ResultByAway(Resource):
+    def get(self, clubID): #get team results for all home game
+        return {"results" : [result.json() for result in ResultModel.find_by_away(clubID)]}, 200
