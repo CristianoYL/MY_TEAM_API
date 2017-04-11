@@ -4,14 +4,15 @@ from sqlalchemy import or_
 class ResultModel(db.Model):
     __tablename__ = 'result'
 
-    # (id,homeID,awayID,tournamentID,homeName,awayName,tournamentName,date,stage,ftScore,extraScore,penScore,info,homeEvents,awayEvents)
+    # (id,homeID,awayID,tournamentID,homeName,awayName,tournamentName,date,stage,
+    #       ftScore,extraScore,penScore,info,homeEvents,awayEvents)
     id = db.Column(db.Integer, primary_key=True)
     homeID = db.Column(db.Integer, db.ForeignKey('club.id'))
     awayID = db.Column(db.Integer, db.ForeignKey('club.id'))
     tournamentID = db.Column(db.Integer, db.ForeignKey('tournament.id'))
     homeName = db.Column(db.String(50))
     awayName = db.Column(db.String(50))
-    tournamentName = db.(db.String(50))
+    tournamentName = db.Column(db.String(50))
     date = db.Column(db.Date)
     stage = db.Column(db.String(30))
     ftScore = db.Column(db.String(20))
@@ -21,7 +22,8 @@ class ResultModel(db.Model):
     homeEvents = db.Column(db.String(1000))
     awayEvents = db.Column(db.String(1000))
 
-    def __init__(self,_id,homeID,awayID,tournamentID,homeName,awayName,tournamentName,date,stage,ftScore,extraScore,penScore,info,homeEvents,awayEvents):
+    def __init__(self,_id,homeID,awayID,tournamentID,homeName,awayName,tournamentName,
+                date,stage,ftScore,extraScore,penScore,info,homeEvents,awayEvents):
         self.id = _id
         self.homeID = homeID
         self.awayID = awayID

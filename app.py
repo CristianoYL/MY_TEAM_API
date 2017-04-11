@@ -12,7 +12,7 @@ from resources.tournament import Tournament,TournamentByID,TournamentByName
 from resources.squad import Squad,SquadPlayer,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer
 from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,TeamsheetList
-from resources.result import Result,ResultByClub
+from resources.result import Result,ResultByClub, ResultByHome, ResultByAway
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
@@ -22,11 +22,11 @@ api = Api(app)
 
 # comment this following section if running on Heroku
 ###############################
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 ###############################
-jwt = JWT(app,authenticate,identity)    #/auth
+jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
 api.add_resource(User,'/user')
 api.add_resource(UserUpdate,'/user/<string:email>')
@@ -57,6 +57,8 @@ api.add_resource(TeamsheetList,'/teamsheet')
 
 api.add_resource(Result,'/result')
 api.add_resource(ResultByClub,'/result/club/<string:clubID>')
+api.add_resource(ResultByHome,'/result/home/<string:clubID>')
+api.add_resource(ResultByAway,'/result/away/<string:clubID>')
 
 if __name__ == '__main__' :
     from db import db
