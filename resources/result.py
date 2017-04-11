@@ -8,8 +8,8 @@ from models.result import ResultModel
 class Result(Resource):
     # (id,home,away,tournamentID,date,stage,ftScore,extraScore,penScore,info,homeEvents,awayEvents)
     parser = reqparse.RequestParser()
-    parser.add_argument('home', type=int, required=True,help="The home team cannot be blank.")
-    parser.add_argument('away', type=int, required=True,help="The away team cannot be blank.")
+    parser.add_argument('homeID', type=int, required=True,help="The homeID cannot be blank.")
+    parser.add_argument('awayID', type=int, required=True,help="The awayID cannot be blank.")
     parser.add_argument('tournamentID', type=int, required=True,help="The tournament cannot be blank.")
     parser.add_argument('date', type=str, required=True,help="The date cannot be blank.")
     parser.add_argument('stage', type=str, required=False)
@@ -36,8 +36,8 @@ class Result(Resource):
 
         unique_keys = {
             'tournamentID' : data['tournamentID'],
-            'home' : data['home'],
-            'away' : data['away'],
+            'homeID' : data['homeID'],
+            'awayID' : data['awayID'],
             'date' : data['date'],
             'stage' : data['stage'],
         }
@@ -65,8 +65,8 @@ class Result(Resource):
 
         unique_keys = {
             'tournamentID' : data['tournamentID'],
-            'home' : data['home'],
-            'away' : data['away'],
+            'homeID' : data['homeID'],
+            'awayID' : data['awayID'],
             'date' : data['date'],
             'stage' : data['stage'],
         }
@@ -93,7 +93,7 @@ class Result(Resource):
 
         unique_keys = {
             'tournamentID' : data['tournamentID'],
-            'home' : data['home'],
+            'homeID' : data['homeID'],
             'away' : data['away'],
             'date' : data['date'],
             'stage' : data['stage'],
@@ -127,5 +127,5 @@ class Result(Resource):
 class ResultByClub(Resource):
     # (id,home,away,tournamentID,date,stage,ftScore,extraScore,penScore,info)
 
-    def get(self,clubID): # get team's results
+    def get(self,clubID): # get club's results
         return {'results':[result.json() for result in ResultModel.find_by_club(clubID)]}, 200

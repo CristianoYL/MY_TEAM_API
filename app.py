@@ -61,4 +61,4 @@ api.add_resource(ResultByClub,'/result/club/<string:clubID>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.3',port = 5000,debug=True)
+    app.run(host = '192.168.1.8',port = 5000,debug=True)
