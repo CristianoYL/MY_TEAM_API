@@ -140,20 +140,15 @@ class Result(Resource):
 
 
 class ResultByClub(Resource):
-    # (id,home,awayID,tournamentID,date,stage,ftScore,extraScore,penScore,info)
-
-<<<<<<< HEAD
     def get(self,clubID): # get club's results
         return {'results':[result.json() for result in ResultModel.find_by_club(clubID)]}, 200
-=======
-    def get(self,clubID): # get team's results
-        return {"results" : [result.json() for result in ResultModel.find_by_club(clubID)]}, 200
+
 
 class ResultByHome(Resource):
     def get(self, clubID): #get team results for all home game
         return {"results" : [result.json() for result in ResultModel.find_by_home(clubID)]}, 200
 
+
 class ResultByAway(Resource):
     def get(self, clubID): #get team results for all home game
         return {"results" : [result.json() for result in ResultModel.find_by_away(clubID)]}, 200
->>>>>>> 3f6b9ac5e50a68554b4ccb79bfab8f97520f1f95
