@@ -84,4 +84,15 @@ class StatsByPlayer(Resource):
         try:
             return StatsModel.find_player_total_stats(playerID), 200
         except:
+            traceback.print_exc()
+            return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500
+
+
+class StatsByClubPlayer(Resource):
+
+    def get(self,clubID,playerID):
+        try:
+            return StatsModel.find_club_player_stats(clubID,playerID), 200
+        except:
+            traceback.print_exc()
             return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500

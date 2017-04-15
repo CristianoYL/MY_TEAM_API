@@ -215,6 +215,48 @@ class StatsModel(db.Model):
         return player_stats
 
     @classmethod
+    def find_club_player_stats(cls,clubID,playerID):
+        club_player_stats = {
+            'clubID' : clubID,
+            'playerID' : playerID,
+            'attendance' : 0,
+            'appearance' : 0,
+            'start' : 0,
+            'goal' : 0,
+            'penalty' : 0,
+            'penaltyShootout' : 0,
+            'penaltyTaken' : 0,
+            'ownGoal' : 0,
+            'header' : 0,
+            'weakFootGoal' : 0,
+            'otherGoal' : 0,
+            'assist' : 0,
+            'yellow' : 0,
+            'red' : 0,
+            'cleanSheet' : 0,
+            'penaltySaved' : 0
+        }
+        total_stats = cls.query.filter_by(clubID=clubID,playerID=playerID)
+        for stats in total_stats:
+            club_player_stats['attendance'] += stats.attendance
+            club_player_stats['appearance'] += stats.appearance
+            club_player_stats['start'] += stats.start
+            club_player_stats['goal'] += stats.goal
+            club_player_stats['penalty'] += stats.penalty
+            club_player_stats['penaltyShootout'] += stats.penaltyShootout
+            club_player_stats['penaltyTaken'] += stats.penaltyTaken
+            club_player_stats['ownGoal'] += stats.ownGoal
+            club_player_stats['header'] += stats.header
+            club_player_stats['weakFootGoal'] += stats.weakFootGoal
+            club_player_stats['otherGoal'] += stats.otherGoal
+            club_player_stats['assist'] += stats.assist
+            club_player_stats['yellow'] += stats.yellow
+            club_player_stats['red'] += stats.red
+            club_player_stats['cleanSheet'] += stats.cleanSheet
+            club_player_stats['penaltySaved'] += stats.penaltySaved
+        return club_player_stats
+
+    @classmethod
     def get_updated_stats(cls,prev_stats,vector):
         prev_stats.attendance += vector.attendance
         prev_stats.appearance += vector.appearance

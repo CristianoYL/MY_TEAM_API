@@ -10,7 +10,7 @@ from resources.player import Player,PlayerList
 from resources.club import Club,ClubByID,ClubByName
 from resources.tournament import Tournament,TournamentByID,TournamentByName
 from resources.squad import Squad,SquadPlayer,SquadTotal
-from resources.stats import Stats,StatsList,StatsByPlayer
+from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer
 from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,TeamsheetList
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway
 
@@ -48,6 +48,7 @@ api.add_resource(SquadTotal,'/squad')
 
 api.add_resource(Stats,'/stats/<string:tournamentID>,<string:clubID>,<string:playerID>')
 api.add_resource(StatsByPlayer,'/stats/player/<string:playerID>')
+api.add_resource(StatsByClubPlayer,'/stats/club/<string:clubID>/player/<string:playerID>')
 api.add_resource(StatsList,'/stats')
 
 api.add_resource(Teamsheet,'/teamsheet/<string:clubID>,<string:playerID>')
