@@ -7,6 +7,7 @@ from security import authenticate, identity
 
 from resources.user import User,UserUpdate
 from resources.player import Player,PlayerList
+from resources.playerInfo import PlayerInfo
 from resources.club import Club,ClubByID,ClubByName
 from resources.tournament import Tournament,TournamentByID,TournamentByName
 from resources.squad import Squad,SquadPlayer,SquadTotal
@@ -33,6 +34,7 @@ api.add_resource(UserUpdate,'/user/<string:email>')
 
 api.add_resource(Player,'/player/<string:email>')
 api.add_resource(PlayerList,'/player')
+api.add_resource(PlayerInfo, '/player_info/<string:playerID>')
 
 api.add_resource(Club,'/club')
 api.add_resource(ClubByID,'/club/id/<string:_id>')
@@ -63,4 +65,4 @@ api.add_resource(ResultByAway,'/result/away/<string:clubID>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.8',port = 5000,debug=True)
+    app.run(host = '192.168.1.1',port = 5000,debug=True)
