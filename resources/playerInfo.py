@@ -6,7 +6,7 @@ from models.teamsheet import TeamsheetModel
 from models.stats import StatsModel
 
 class PlayerInfo(Resource):
-    def get(self, playerID):
+    def get(self, playerID):    # 
         if not PlayerModel.find_by_id(playerID):
             return {'message': 'Player info not found'}, 404
 
