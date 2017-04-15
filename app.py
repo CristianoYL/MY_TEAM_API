@@ -66,4 +66,4 @@ api.add_resource(ResultByAway,'/result/away/<string:clubID>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.1',port = 5000,debug=True)
+    app.run(host = '192.168.1.8',port = 5000,debug=True)

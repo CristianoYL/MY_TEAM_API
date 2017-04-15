@@ -7,15 +7,19 @@ from models.stats import StatsModel
 
 class PlayerInfo(Resource):
     def get(self, playerID):
-        errorMsg = {'message': 'Player doest not exist'}
         if not PlayerModel.find_by_id(playerID):
-            return errorMsg, 404
-        if not TeamsheetModel.find_by_player(playerID):
-            return errorMsg, 404
-        if not  Stats.model.find_player_total_stats(playerID):
-            return errorMsg, 404
-        playerSelfInfo = {"player" : PlayerModel.find_by_id(playerID).json()}
-        clubInfo = {"clubs" : [res.json() for res in TeamsheetModel.find_by_player(playerID)]}
-        statsInfo = {"totalStats" : Stats.model.find_player_total_stats(playerID)}
+            return {'message': 'Player info not found'}, 404
 
-        return {"playerInfo" : [playerSelfInfo, clubInfo, statsInfo]}
+        if not TeamsheetModel.find_by_player(playerID):
+            return {'message': 'Player club info not found'}, 404
+
+        if not  StatsModel.find_player_total_stats(playerID):
+            return {'message': 'Player stats info not found'}, 404
+
+        playerInfo = {
+                "player" : PlayerModel.find_by_id(playerID).json(),
+                "clubs" : [res.json() for res in TeamsheetModel.find_by_player(playerID)],
+                "totalStats" : StatsModel.find_player_total_stats(playerID)
+                }
+
+        return { "playerInfo" : playerInfo }, 200
