@@ -33,7 +33,7 @@ class PlayerInfoByID(Resource):
                 "totalStats" : totalStats
                 }
 
-        return { "playerInfo" : playerInfo }, 200
+        return playerInfo, 200
 
 
 class PlayerInfoByEmail(Resource):
@@ -65,4 +65,4 @@ class PlayerInfoByEmail(Resource):
                 "totalStats" : totalStats
                 }
 
-        return { "playerInfo" : playerInfo }, 200
+        return playerInfo, 200
