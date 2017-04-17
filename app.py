@@ -8,7 +8,7 @@ from security import authenticate, identity
 from resources.user import User,UserUpdate
 from resources.player import Player,PlayerList
 from resources.playerInfo import PlayerInfoByEmail,PlayerInfoByID
-from resources.club import Club,ClubByID,ClubByName
+from resources.club import Club,ClubByID,ClubByName,ClubRegistration
 from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub
 from resources.squad import Squad,SquadByClub,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
@@ -39,6 +39,7 @@ api.add_resource(PlayerInfoByEmail, '/player_info/email/<string:email>')
 api.add_resource(PlayerInfoByID, '/player_info/id/<string:playerID>')
 
 api.add_resource(Club,'/club')
+api.add_resource(ClubRegistration,'/club/register')
 api.add_resource(ClubByID,'/club/id/<string:_id>')
 api.add_resource(ClubByName,'/club/name/<string:name>')
 
@@ -57,7 +58,7 @@ api.add_resource(StatsByClubPlayer,'/stats/club/<string:clubID>/player/<string:p
 api.add_resource(StatsByTournamentClub,'/stats/tournament/<string:tournamentID>/club/<string:clubID>')
 api.add_resource(StatsList,'/stats')
 
-api.add_resource(Teamsheet,'/teamsheet/<string:clubID>,<string:playerID>')
+api.add_resource(Teamsheet,'/teamsheet/club/<string:clubID>/player/<string:playerID>')
 api.add_resource(TeamsheetByPlayer,'/teamsheet/player/<string:playerID>')
 api.add_resource(TeamsheetByClub,'/teamsheet/club/<string:clubID>')
 api.add_resource(TeamsheetList,'/teamsheet')
