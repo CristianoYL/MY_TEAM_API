@@ -9,9 +9,9 @@ from resources.user import User,UserUpdate
 from resources.player import Player,PlayerList
 from resources.playerInfo import PlayerInfoByEmail,PlayerInfoByID
 from resources.club import Club,ClubByID,ClubByName
-from resources.tournament import Tournament,TournamentByID,TournamentByName
-from resources.squad import Squad,SquadPlayer,SquadTotal
-from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer
+from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub
+from resources.squad import Squad,SquadByClub,SquadTotal
+from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
 from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,TeamsheetList
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway
 
@@ -45,14 +45,16 @@ api.add_resource(ClubByName,'/club/name/<string:name>')
 api.add_resource(Tournament,'/tournament')
 api.add_resource(TournamentByID,'/tournament/id/<string:_id>')
 api.add_resource(TournamentByName,'/tournament/name/<string:name>')
+api.add_resource(TournamentByClub,'/tournament/club/<string:clubID>')
 
 api.add_resource(Squad,'/squad')
-api.add_resource(SquadPlayer,'/squad/<string:tournamentID>,<string:clubID>')
+api.add_resource(SquadByClub,'/squad/tournament/<string:tournamentID>/club/<string:clubID>')
 api.add_resource(SquadTotal,'/squad')
 
-api.add_resource(Stats,'/stats/<string:tournamentID>,<string:clubID>,<string:playerID>')
+api.add_resource(Stats,'/stats/tournament/<string:tournamentID>/club/<string:clubID>/player/<string:playerID>')
 api.add_resource(StatsByPlayer,'/stats/player/<string:playerID>')
 api.add_resource(StatsByClubPlayer,'/stats/club/<string:clubID>/player/<string:playerID>')
+api.add_resource(StatsByTournamentClub,'/stats/tournament/<string:tournamentID>/club/<string:clubID>')
 api.add_resource(StatsList,'/stats')
 
 api.add_resource(Teamsheet,'/teamsheet/<string:clubID>,<string:playerID>')

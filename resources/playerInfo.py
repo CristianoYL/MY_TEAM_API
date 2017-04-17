@@ -45,7 +45,7 @@ class PlayerInfoByID(Resource):
                 finalScore = result.penScore
                 if not finalScore:
                     finalScore = result.extraScore
-                    if not extraScore:
+                    if not finalScore:
                         finalScore = result.ftScore
 
                 if not finalScore:
@@ -109,7 +109,7 @@ class PlayerInfoByEmail(Resource):
                 finalScore = result.penScore
                 if not finalScore:
                     finalScore = result.extraScore
-                    if not extraScore:
+                    if not finalScore:
                         finalScore = result.ftScore
 
                 if not finalScore:

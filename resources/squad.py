@@ -3,6 +3,7 @@ from flask_restful import Resource,reqparse
 from flask_jwt import jwt_required
 
 from models.squad import SquadModel
+from models.player import PlayerModel
 
 class Squad(Resource):
     # tid,cid,pid,number,isAdmin
@@ -61,11 +62,27 @@ class Squad(Resource):
             return {'message':'Internal server error, squad update failed!'},500
 
 
-class SquadPlayer(Resource):
+class SquadByClub(Resource):
     # tid,cid,pid,number,isAdmin
 
     def get(self,tournamentID,clubID):
-        return {'squad':[player.json() for player in SquadModel.find_tournament_club_squad(tournamentID,clubID)]},200
+        squad = []
+        info = {
+            "displayName" : None,
+            "number" : 0,
+            "role" : None,
+        }
+        for squadPlayer in SquadModel.find_tournament_club_squad(tournamentID,clubID):
+            info["number"] = squadPlayer.number
+            player = PlayerModel.find_by_id(squadPlayer.playerID)
+            if player:
+                info["displayName"] = player.displayName
+                info["role"] = player.role
+                squad.append(info)
+            else:
+                traceback.print_exc()
+                return {'message':'Internal server error, retrieve squad failed!'},500
+        return {'squad':squad},200
 
 
 class SquadTotal(Resource):

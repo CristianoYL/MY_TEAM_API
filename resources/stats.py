@@ -96,3 +96,13 @@ class StatsByClubPlayer(Resource):
         except:
             traceback.print_exc()
             return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500
+
+
+class StatsByTournamentClub(Resource):
+
+    def get(self,tournamentID,clubID): # get club's total stats in this tournament
+        try:
+            return StatsModel.find_tournament_club_total_stats(tournamentID,clubID), 200
+        except:
+            traceback.print_exc()
+            return {'message' : 'Internal Server Error. Cannot load club tournament total stats.'}, 500

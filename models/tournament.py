@@ -1,4 +1,5 @@
 from db import db
+from models.squad import SquadModel
 
 class TournamentModel(db.Model):
     __tablename__ = 'tournament'
@@ -26,6 +27,15 @@ class TournamentModel(db.Model):
     @classmethod
     def find_by_name(cls,name):
         return cls.query.filter_by(name=name)
+
+    @classmethod
+    def find_by_club(cls,clubID):
+        tournamentList = []
+        tournaments = cls.find_all()
+        for tournament in tournaments:
+            if SquadModel.find_tournament_club_squad(tournament.id,clubID).first():
+                tournamentList.append(tournament.json())
+        return tournamentList
 
     @classmethod
     def find_by_id(cls,_id):

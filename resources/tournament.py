@@ -69,3 +69,11 @@ class Tournament(Resource):
 
     def get(self):  # get all tournaments
         return { "tournaments": [tournament.json() for tournament in TournamentModel.find_all()]}, 200
+
+
+class TournamentByClub(Resource):
+    # (id,name,info)
+
+    def get(self,clubID):   # get club's all participating tournaments
+        tournamentList = TournamentModel.find_by_club(clubID)
+        return {'tournaments':tournamentList}, 200
