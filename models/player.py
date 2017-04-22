@@ -64,6 +64,10 @@ class PlayerModel(db.Model):
         return cls.query.filter_by(displayName=displayName)
 
     @classmethod
+    def find_by_fullname(cls,firstName,lastName):
+        return cls.query.filter_by(firstName=firstName,lastName=lastName)
+
+    @classmethod
     def find_by_firstname(cls,firstName):
         return cls.query.filter_by(firstName=firstName)
 

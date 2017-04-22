@@ -3,7 +3,7 @@ from db import db
 class StatsModel(db.Model):
     __tablename__ = 'stats'
     # (tournamentID, clubID, playerID, attendance, appearance, start, goal,
-    #   penalty, penaltyShootout, penaltyTaken, ownGoal, header, weakFootGoal
+    #   penalty,freekick, penaltyShootout, penaltyTaken, ownGoal, header, weakFootGoal
     #   otherGoal, assist, yellow, red, cleanSheet, penaltySaved)
     tournamentID = db.Column(db.Integer, db.ForeignKey('tournament.id'), primary_key=True)
     clubID = db.Column(db.Integer, db.ForeignKey('club.id'), primary_key=True)
@@ -13,6 +13,7 @@ class StatsModel(db.Model):
     start = db.Column(db.Integer)
     goal = db.Column(db.Integer)
     penalty = db.Column(db.Integer)
+    freekick = db.Column(db.Integer)
     penaltyShootout = db.Column(db.Integer)
     penaltyTaken = db.Column(db.Integer)
     ownGoal = db.Column(db.Integer)
@@ -26,7 +27,7 @@ class StatsModel(db.Model):
     penaltySaved = db.Column(db.Integer)
 
     def __init__(self,tournamentID, clubID, playerID, attendance, appearance,
-            start, goal,penalty, penaltyShootout, penaltyTaken, ownGoal,
+            start, goal,penalty,freekick, penaltyShootout, penaltyTaken, ownGoal,
             header,weakFootGoal,otherGoal,assist, yellow,red, cleanSheet, penaltySaved):
         self.tournamentID = tournamentID
         self.clubID = clubID
@@ -36,6 +37,7 @@ class StatsModel(db.Model):
         self.start = start
         self.goal = goal
         self.penalty = penalty
+        self.freekick = freekick
         self.penaltyShootout = penaltyShootout
         self.penaltyTaken = penaltyTaken
         self.ownGoal = ownGoal
@@ -58,6 +60,7 @@ class StatsModel(db.Model):
             'start' : self.start,
             'goal' : self.goal,
             'penalty' : self.penalty,
+            'freekick' : self.freekick,
             'penaltyShootout' : self.penaltyShootout,
             'penaltyTaken' : self.penaltyTaken,
             'ownGoal' : self.ownGoal,
@@ -100,6 +103,7 @@ class StatsModel(db.Model):
             'start' : 0,
             'goal' : 0,
             'penalty' : 0,
+            'freekick' : 0,
             'penaltyShootout' : 0,
             'penaltyTaken' : 0,
             'ownGoal' : 0,
@@ -119,6 +123,7 @@ class StatsModel(db.Model):
             tournament_stats['start'] += stats.start
             tournament_stats['goal'] += stats.goal
             tournament_stats['penalty'] += stats.penalty
+            tournament_stats['freekick'] += stats.freekick
             tournament_stats['penaltyShootout'] += stats.penaltyShootout
             tournament_stats['penaltyTaken'] += stats.penaltyTaken
             tournament_stats['ownGoal'] += stats.ownGoal
@@ -138,6 +143,7 @@ class StatsModel(db.Model):
             'clubID' : clubID,
             'goal' : 0,
             'penalty' : 0,
+            'freekick' : 0,
             'penaltyShootout' : 0,
             'penaltyTaken' : 0,
             'ownGoal' : 0,
@@ -154,6 +160,7 @@ class StatsModel(db.Model):
         for stats in club_total_stats:
             club_stats['goal'] += stats.goal
             club_stats['penalty'] += stats.penalty
+            club_stats['freekick'] += stats.freekick
             club_stats['penaltyShootout'] += stats.penaltyShootout
             club_stats['penaltyTaken'] += stats.penaltyTaken
             club_stats['ownGoal'] += stats.ownGoal
@@ -176,6 +183,7 @@ class StatsModel(db.Model):
             'start' : 0,
             'goal' : 0,
             'penalty' : 0,
+            'freekick' : 0,
             'penaltyShootout' : 0,
             'penaltyTaken' : 0,
             'ownGoal' : 0,
@@ -195,6 +203,7 @@ class StatsModel(db.Model):
             player_stats['start'] += stats.start
             player_stats['goal'] += stats.goal
             player_stats['penalty'] += stats.penalty
+            player_stats['freekick'] += stats.freekick
             player_stats['penaltyShootout'] += stats.penaltyShootout
             player_stats['penaltyTaken'] += stats.penaltyTaken
             player_stats['ownGoal'] += stats.ownGoal
@@ -218,6 +227,7 @@ class StatsModel(db.Model):
             'start' : 0,
             'goal' : 0,
             'penalty' : 0,
+            'freekick' : 0,
             'penaltyShootout' : 0,
             'penaltyTaken' : 0,
             'ownGoal' : 0,
@@ -237,6 +247,7 @@ class StatsModel(db.Model):
             club_player_stats['start'] += stats.start
             club_player_stats['goal'] += stats.goal
             club_player_stats['penalty'] += stats.penalty
+            club_player_stats['freekick'] += stats.freekick
             club_player_stats['penaltyShootout'] += stats.penaltyShootout
             club_player_stats['penaltyTaken'] += stats.penaltyTaken
             club_player_stats['ownGoal'] += stats.ownGoal
@@ -257,6 +268,7 @@ class StatsModel(db.Model):
         prev_stats.start += vector.start
         prev_stats.goal += vector.goal
         prev_stats.penalty += vector.penalty
+        prev_stats.freekick += vector.freekick
         prev_stats.penaltyShootout += vector.penaltyShootout
         prev_stats.penaltyTaken += vector.penaltyTaken
         prev_stats.ownGoal += vector.ownGoal

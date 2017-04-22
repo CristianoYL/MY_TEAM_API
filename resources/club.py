@@ -61,11 +61,12 @@ class Club(Resource):
     def post(self): # create a club
         data = self.parser.parse_args()
 
-        club = ClubModel.find_by_name(data['name'])
+        clubs = ClubModel.find_by_name(data['name'])
 
-        if club:
+        if clubs.first():   # if clubs with same name exists, let the user know
             return {
-            "message":"Club creation failed. Club with name <{}> already exists".format(data['name'])
+            "message" : "Club creation failed. Club with name <{}> already exists".format(data['name']),
+            'clubs' : [club.json() for club in clubs]
             }, 400
 
         club = ClubModel(None,**data)
@@ -86,25 +87,30 @@ class ClubRegistration(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('name', type=str, required=True,help="Club name cannot be blank.")
     parser.add_argument('info', type=str, required=True, help="Please add some description about this club.")
-    parser.add_argument('playerID', type=int, required=True, help="Please include player's ID when creating a club")
 
-    def post(self): # create a club
+    def post(self,playerID): # create a club
         data = self.parser.parse_args()
 
-        club = ClubModel.find_by_name(data['name'])
+        clubs = ClubModel.find_by_name(data['name'])
 
-        if club:
+        if clubs.first():
             return {
-            "message":"Club creation failed. Club with name <{}> already exists".format(data['name'])
+            "message" : "Club creation failed. Club with name <{}> already exists".format(data['name']),
+            "clubs" : [club.json() for club in clubs]
             }, 400
 
         club = ClubModel(None,data['name'],data['info'])
 
         try:
             club.save_to_db()
-            current_date = date.today()
-            teamsheet = TeamsheetModel(club.id,data['playerID'],current_date,0,True)
-            teamsheet.save_to_db()
+            try:
+                current_date = date.today()
+                teamsheet = TeamsheetModel(club.id,playerID,current_date,True,True)
+                teamsheet.save_to_db()
+            except: # if teamsheet creation failed, delete this club
+                club.delete_from_db()
+                traceback.print_exc()
+                return {"message":"Internal server error, club teamsheet creation failed."}, 500
         except:
             traceback.print_exc()
             return {"message":"Internal server error, club creation failed."}, 500

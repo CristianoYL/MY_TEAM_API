@@ -7,22 +7,19 @@ class SquadModel(db.Model):
     clubID = db.Column(db.Integer, db.ForeignKey('club.id'), primary_key=True)
     playerID = db.Column(db.Integer, db.ForeignKey('player.id'), primary_key=True)
     number = db.Column(db.Integer)
-    isAdmin = db.Column(db.Boolean)
 
-    def __init__(self,tournamentID,clubID,playerID,number,isAdmin):
+    def __init__(self,tournamentID,clubID,playerID,number):
         self.tournamentID = tournamentID
         self.clubID = clubID
         self.playerID = playerID
         self.number = number
-        self.isAdmin = isAdmin
 
     def json(self):
         return {
             'tournamentID' : self.tournamentID,
             'clubID' : self.clubID,
             'playerID' : self.playerID,
-            'number' : self.number,
-            'isAdmin' : self.isAdmin
+            'number' : self.number
         }
 
     @classmethod
@@ -42,11 +39,15 @@ class SquadModel(db.Model):
         return cls.query.filter_by(playerID=playerID)
 
     @classmethod
+    def find_by_club_player(cls,clubID,playerID):
+        return cls.query.filter_by(clubID=clubID,playerID=playerID)
+
+    @classmethod
     def find_tournament_club_squad(cls,tournamentID,clubID):
         return cls.query.filter_by(tournamentID=tournamentID,clubID=clubID)
 
     @classmethod
-    def find_player(cls,tournamentID,clubID,playerID):
+    def find_by_tournament_club_player(cls,tournamentID,clubID,playerID):
         return cls.query.filter_by(tournamentID=tournamentID,clubID=clubID,playerID=playerID).first()
 
     @classmethod

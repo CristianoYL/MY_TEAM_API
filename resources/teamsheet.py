@@ -11,7 +11,7 @@ class Teamsheet(Resource):
     # (clubID,playerID,memberSince)
     parser = reqparse.RequestParser()
     parser.add_argument('memberSince', type=str, required=False)
-    parser.add_argument('number', type=int, required=False)
+    parser.add_argument('isAdmin', type=bool, required=False)
     parser.add_argument('isActive', type=bool, required=False)
 
     def get(self,clubID,playerID):
@@ -33,9 +33,13 @@ class Teamsheet(Resource):
                     except ValueError:
                         return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
                 # new member is active by default
-                if not data['isActive']:
+                if data['isActive'] is None:
                     data['isActive'] = True
-                member = TeamsheetModel(clubID,playerID,memberSince,data['number'],data['isActive'])
+
+                # member is not admin by default
+                if data['isAdmin'] is None:
+                    data['isAdmin'] = False
+                member = TeamsheetModel(clubID,playerID,memberSince,data['isActive'])
                 member.save_to_db()
                 return member.json() ,201
             except:
@@ -65,10 +69,13 @@ class Teamsheet(Resource):
                         member.memberSince = datetime.strptime(data['memberSince'], '%Y-%m-%d')
                     except ValueError:
                         return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
-                if data['number']:
-                    member.number = data['number']
+
                 if data['isActive'] is not None:
                     member.isActive = data['isActive']
+
+                if data['isAdmin'] is not None:
+                    member.isAdmin = data['isAdmin']
+
                 member.save_to_db()
                 return member.json() ,200
             except:
@@ -94,7 +101,12 @@ class TeamsheetByClub(Resource):
             players = TeamsheetModel.find_club_active_player(clubID)
         else:
             players = TeamsheetModel.find_by_club(clubID)
-        return {'teamsheet':[PlayerModel.find_by_id(teamsheet.playerID).json() for teamsheet in players]},200
+        teamsheetList = []
+        for teamsheet in players:
+            player = PlayerModel.find_by_id(teamsheet.playerID)
+            if player:
+                teamsheetList.append(player.json())
+        return {'teamsheet': teamsheetList},200
 
 
 class TeamsheetList(Resource):

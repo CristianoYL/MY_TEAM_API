@@ -12,7 +12,6 @@ class Squad(Resource):
     parser.add_argument('clubID', type=int, required=True,help="Club id cannot be blank.")
     parser.add_argument('playerID', type=int, required=True,help="Player id cannot be blank.")
     parser.add_argument('number', type=int, required=False)
-    parser.add_argument('isAdmin', type=bool, required=False)
 
     def post(self): # create a squad row
         data = self.parser.parse_args()
@@ -24,8 +23,6 @@ class Squad(Resource):
         if not SquadModel.is_number_available(data['tournamentID'],data['clubID'],data['number']):
             return {'message':'player with number {} already exists in squad!'.format(data['number'])},400
         try:
-            if not data['isAdmin']:
-                data['isAdmin'] = False
             squad = SquadModel(**data)
             squad.save_to_db()
             return squad.json(),201
@@ -53,8 +50,6 @@ class Squad(Resource):
         try:
             if data['number']:
                 squad.number = data['number']
-            if data['isAdmin']:
-                squad.isAdmin = data['isAdmin']
             squad.save_to_db()
             return squad.json(),200
         except:

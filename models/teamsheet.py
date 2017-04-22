@@ -6,23 +6,23 @@ class TeamsheetModel(db.Model):
     clubID = db.Column(db.Integer, db.ForeignKey('club.id'), primary_key=True)
     playerID = db.Column(db.Integer, db.ForeignKey('player.id'), primary_key=True)
     memberSince = db.Column(db.Date)
-    number = db.Column(db.Integer)
     isActive = db.Column(db.Boolean)
+    isAdmin = db.Column(db.Boolean)
 
-    def __init__(self,clubID,playerID,memberSince,number,isActive):
+    def __init__(self,clubID,playerID,memberSince,isActive,isAdmin):
         self.clubID = clubID
         self.playerID = playerID
         self.memberSince = memberSince
-        self.number = number
         self.isActive = isActive
+        self.isAdmin = isAdmin
 
     def json(self):
         return {
             "clubID" : self.clubID,
             "playerID" : self.playerID,
             "memberSince" : self.memberSince.isoformat(),
-            "number" : self.number,
-            "isActive" : self.isActive
+            "isActive" : self.isActive,
+            "isAdmin" : self.isAdmin
         }
 
     @classmethod
