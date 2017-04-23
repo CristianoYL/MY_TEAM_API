@@ -5,6 +5,7 @@ from models.player import PlayerModel
 from models.teamsheet import TeamsheetModel
 from models.stats import StatsModel
 from models.result import ResultModel
+from models.tournament import TournamentModel
 from models.squad import SquadModel
 from models.club import ClubModel
 from functions.performance import GamePerformance
@@ -59,3 +60,35 @@ class PlayerInfoByEmail(Resource):
         playerID = player.id
 
         return PlayerInfoByID.get(playerID)
+
+class PlayerClubInfo(Resource):
+    @classmethod
+    def get(cls,clubID,playerID):   # get player's club stats, performance, and tournaments
+        try:
+            playerStats = {
+                'stats' : StatsModel.find_club_player_stats(clubID,playerID),
+                'gamePerformance' : {
+                    "win" : 0,
+                    "draw" : 0,
+                    "loss" : 0,
+                },
+                'tournaments' : []
+            }
+            gamePerformance = GamePerformance.get_player_club_performance(clubID,playerID)
+            if gamePerformance:
+                playerStats['gamePerformance'] = gamePerformance
+
+            squads = SquadModel.find_by_club_player(clubID,playerID)
+
+            tournaments = []
+            for squad in squads:
+                tournament = TournamentModel.find_by_id(squad.tournamentID)
+                if tournament:
+                    tournaments.append(tournament.json())
+                else:
+                    return {'message' : 'Internal server error! Failed to retrieve player tournament info'},500
+            playerStats['tournaments'] = tournaments
+            return playerStats, 200
+        except:
+            traceback.print_exc()
+            return {'message' : 'Internal Server Error. Cannot load player club stats.'}, 500

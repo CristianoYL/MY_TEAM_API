@@ -7,14 +7,14 @@ from security import authenticate, identity
 
 from resources.user import User,UserUpdate
 from resources.player import Player,PlayerList,PlayerRegistration
-from resources.playerInfo import PlayerInfoByEmail,PlayerInfoByID
+from resources.playerInfo import PlayerInfoByEmail,PlayerInfoByID,PlayerClubInfo
 from resources.clubInfo import ClubInfoByID
 from resources.club import Club,ClubByID,ClubByName,ClubRegistration
 from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub,TournamentRegistration
 from resources.squad import Squad,SquadByClub,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
 from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,TeamsheetList
-from resources.result import Result,ResultByClub, ResultByHome, ResultByAway
+from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,ResultByTournamentClub
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
@@ -39,6 +39,7 @@ api.add_resource(PlayerList,'/player')
 
 api.add_resource(PlayerInfoByEmail, '/player_info/email/<string:email>')
 api.add_resource(PlayerInfoByID, '/player_info/id/<string:playerID>')
+api.add_resource(PlayerClubInfo, '/player_info/<string:playerID>/club/<string:clubID>')
 
 api.add_resource(ClubInfoByID, '/club_info/id/<string:clubID>')
 
@@ -72,6 +73,7 @@ api.add_resource(Result,'/result')
 api.add_resource(ResultByClub,'/result/club/<string:clubID>')
 api.add_resource(ResultByHome,'/result/home/<string:clubID>')
 api.add_resource(ResultByAway,'/result/away/<string:clubID>')
+api.add_resource(ResultByTournamentClub,'/result/tournament/<string:tournamentID>/club/<string:clubID>')
 
 if __name__ == '__main__' :
     from db import db

@@ -162,7 +162,20 @@ class StatsByTournamentClub(Resource):
 
     def get(self,tournamentID,clubID): # get club's total stats in this tournament
         try:
-            return StatsModel.find_tournament_club_total_stats(tournamentID,clubID), 200
+            clubStats = {
+                'stats' : StatsModel.find_tournament_club_total_stats(tournamentID,clubID),
+                'gamePerformance' : {
+                    "win" : 0,
+                    "draw" : 0,
+                    "loss" : 0,
+                    "cleanSheet" : 0,
+                    "goalsConceded" : 0,
+                }
+            }
+            gamePerformance = GamePerformance.get_club_tournament_performance(tournamentID,clubID)
+            if gamePerformance:
+                clubStats['gamePerformance'] = gamePerformance
+            return clubStats, 200
         except:
             traceback.print_exc()
             return {'message' : 'Internal Server Error. Cannot load club tournament total stats.'}, 500

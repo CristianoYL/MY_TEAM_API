@@ -152,3 +152,8 @@ class ResultByHome(Resource):
 class ResultByAway(Resource):
     def get(self, clubID): #get team results for all home game
         return {"results" : [result.json() for result in ResultModel.find_by_away(clubID)]}, 200
+
+
+class ResultByTournamentClub(Resource):
+    def get(self,tournamentID,clubID): # get club's results
+        return {'results':[result.json() for result in ResultModel.find_club_tournament_result(tournamentID,clubID)]}, 200
