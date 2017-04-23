@@ -112,7 +112,7 @@ class TournamentRegistration(Resource):
             return {"message":"Internal server error! Tournament creation failed."}, 500
 
         # step 2: create squad
-        squad = SquadModel.find_player(tournament.id,clubID,playerID)
+        squad = SquadModel.find_by_tournament_club_player(tournament.id,clubID,playerID)
 
         if squad:   # roll back
             try:    # delete tournament as well
