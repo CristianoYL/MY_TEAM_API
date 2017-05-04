@@ -15,6 +15,7 @@ class Stats(Resource):
     parser.add_argument('start', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('goal', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('penalty', type=int, required=True, help="This field cannot be blank.")
+    parser.add_argument('freekick', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('penaltyShootout', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('penaltyTaken', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('ownGoal', type=int, required=True, help="This field cannot be blank.")

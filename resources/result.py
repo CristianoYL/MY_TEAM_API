@@ -1,4 +1,5 @@
 import traceback
+import json
 from flask_restful import Resource,reqparse
 from flask_jwt import jwt_required
 from datetime import datetime
@@ -19,8 +20,8 @@ class Result(Resource):
     parser.add_argument('extraScore', type=str, required=False)
     parser.add_argument('penScore', type=str, required=False)
     parser.add_argument('info', type=str, required=False)
-    parser.add_argument('homeEvents', type=str, required=False)
-    parser.add_argument('awayEvents', type=str, required=False)
+    parser.add_argument('homeEvents', type=dict,required=False,action='append')
+    parser.add_argument('awayEvents', type=dict,required=False,action='append')
 
     def get(self): # get all results
         return {'results':[result.json() for result in ResultModel.find_all()]}, 200
@@ -37,9 +38,13 @@ class Result(Resource):
             return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
 
         homeClub = ClubModel.find_by_id(data["homeID"])
+        if not homeClub:
+            return { "message": "Home club not found"} ,404
         homeName = homeClub.name
 
         awayClub = ClubModel.find_by_id(data["awayID"])
+        if not awayClub:
+            return { "message": "Away club not found"} ,404
         awayName = awayClub.name
 
         tournament = TournamentModel.find_by_id(data["tournamentID"])
@@ -62,6 +67,10 @@ class Result(Resource):
             return {'message': 'result already exists'}, 400
 
         # if not exist, proceed to create
+        data['homeEvents'] = json.dumps(data['homeEvents'])
+        data['awayEvents'] = json.dumps(data['awayEvents'])
+        print('homeEvents:')
+        print(data['homeEvents'])
         result = ResultModel(None,**data)
         try:        # try to insert
             result.save_to_db()

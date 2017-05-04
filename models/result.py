@@ -1,5 +1,6 @@
 from db import db
 from sqlalchemy import or_
+import json
 
 class ResultModel(db.Model):
     __tablename__ = 'result'
@@ -55,8 +56,8 @@ class ResultModel(db.Model):
             "extraScore": self.extraScore,
             "penScore" : self.penScore,
             "info" : self.info,
-            "homeEvents" : self.homeEvents,
-            "awayEvents" : self.awayEvents
+            "homeEvents" : json.loads(self.homeEvents),
+            "awayEvents" : json.loads(self.awayEvents)
         }
 
     @classmethod
