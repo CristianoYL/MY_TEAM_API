@@ -17,16 +17,17 @@ from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,Team
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,ResultByTournamentClub
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'os.environ.get('DATABASE_URL','sqlite:///myteam.db')'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
 
 # comment this following section if running on Heroku
 ###############################
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 ###############################
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
