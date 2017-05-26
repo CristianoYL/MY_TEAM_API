@@ -17,7 +17,7 @@ class Squad(Resource):
         data = self.parser.parse_args()
         if not data['number']:  # number cannot be blank for registration
             return {'message':'Player kit number cannot be blank!'},400
-        squad = SquadModel.find_player(data['tournamentID'],data['clubID'],data['playerID'])
+        squad = SquadModel.find_by_tournament_club_player(data['tournamentID'],data['clubID'],data['playerID'])
         if squad:
             return {'message':'player already exists in squad!'},400
         if not SquadModel.is_number_available(data['tournamentID'],data['clubID'],data['number']):
@@ -44,7 +44,7 @@ class Squad(Resource):
 
     def put(self): # update a squad row
         data = self.parser.parse_args()
-        squad = SquadModel.find_player(data['tournamentID'],data['clubID'],data['playerID'])
+        squad = SquadModel.find_by_tournament_club_player(data['tournamentID'],data['clubID'],data['playerID'])
         if not squad:
             return {'message':'player not found!'},404
         try:
@@ -63,17 +63,19 @@ class SquadByClub(Resource):
     def get(self,tournamentID,clubID):
         squad = []
         info = {
+            "playerID" : 0,
             "displayName" : None,
             "number" : 0,
             "role" : None,
         }
         for squadPlayer in SquadModel.find_tournament_club_squad(tournamentID,clubID):
-            info["number"] = squadPlayer.number
             player = PlayerModel.find_by_id(squadPlayer.playerID)
             if player:
+                info["playerID"] = player.id
                 info["displayName"] = player.displayName
+                info["number"] = squadPlayer.number
                 info["role"] = player.role
-                squad.append(info)
+                squad.append(info.copy())
             else:
                 traceback.print_exc()
                 return {'message':'Internal server error, retrieve squad failed!'},500
