@@ -7,6 +7,7 @@ from datetime import datetime
 from models.result import ResultModel
 from models.club import ClubModel
 from models.tournament import TournamentModel
+from models.stats import StatsModel
 
 class Result(Resource):
     # (id,homeID,awayID,tournamentID,date,stage,ftScore,extraScore,penScore,info,homeEvents,awayEvents)
@@ -166,3 +167,94 @@ class ResultByAway(Resource):
 class ResultByTournamentClub(Resource):
     def get(self,tournamentID,clubID): # get club's results
         return {'results':[result.json() for result in ResultModel.find_club_tournament_result(tournamentID,clubID)]}, 200
+
+    def post(self,tournamentID,clubID): # post new game result and update player stats
+        parser = reqparse.RequestParser()
+        parser.add_argument('homeID', type=int, required=True,help="The homeID cannot be blank.")
+        parser.add_argument('awayID', type=int, required=True,help="The awayID cannot be blank.")
+        parser.add_argument('tournamentID', type=int, required=True,help="The tournament cannot be blank.")
+        parser.add_argument('homeName', type=str, required=False)
+        parser.add_argument('awayName', type=str, required=False)
+        parser.add_argument('tournamentName', type=str, required=False)
+        parser.add_argument('date', type=str, required=True,help="The date cannot be blank.")
+        parser.add_argument('stage', type=str, required=False)
+        parser.add_argument('ftScore', type=str, required=False)
+        parser.add_argument('extraScore', type=str, required=False)
+        parser.add_argument('penScore', type=str, required=False)
+        parser.add_argument('info', type=str, required=False)
+        parser.add_argument('homeEvents', type=dict,required=False,action='append')
+        parser.add_argument('awayEvents', type=dict,required=False,action='append')
+        parser.add_argument('stats', type=dict,required=False,action='append')
+
+        data = parser.parse_args()
+
+        try:
+            data['date'] = datetime.strptime(data['date'], '%Y-%m-%d')
+        except ValueError:
+            return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
+
+        unique_keys = {
+            'tournamentID' : tournamentID,
+            'homeID' : data['homeID'],
+            'awayID' : data['awayID'],
+            'date' : data['date'],
+            'stage' : data['stage'],
+        }
+        # check if already exists
+        result = ResultModel.find_by_tournament_home_away_date_stage(**unique_keys)
+        if result:
+            return {'message': 'result already exists'}, 400
+
+        # if not exist, proceed to create
+        data['homeEvents'] = json.dumps(data['homeEvents'])
+        data['awayEvents'] = json.dumps(data['awayEvents'])
+        print('home events:')
+        print(data['homeEvents'])
+        print('away events:')
+        print(data['awayEvents'])
+
+        result_params = {
+            "homeID" : data['homeID'],
+            "awayID" : data['awayID'],
+            "tournamentID" : data['tournamentID'],
+            "homeName" : data['homeName'],
+            "awayName" : data['awayName'],
+            "tournamentName" : data['tournamentName'],
+            "date" : data['date'],
+            "stage" : data['stage'],
+            "ftScore" : data['ftScore'],
+            "extraScore": data['extraScore'],
+            "penScore" : data['penScore'],
+            "info" : data['info'],
+            "homeEvents" : data['homeEvents'],
+            "awayEvents" : data['awayEvents']
+        }
+
+        result = ResultModel(None,**result_params)
+
+        response = {
+            'result' : result.json(),
+            'stats' : []
+        }
+
+        try:        # try to insert
+            result.save_to_db()
+        except:
+            traceback.print_exc()
+            return {'message':'Internal server error, upload result failed.'},500
+
+        for stats in data['stats']:
+            vector = StatsModel(**stats)
+            previous_stats = StatsModel.find_stats(tournamentID,clubID,stats['playerID'])
+            if not previous_stats:
+                return {'message':'Internal server error, failed to locate player <id:{}> stats'.format(stats["playerID"])},500
+
+            updated_stats = StatsModel.get_updated_stats(previous_stats,vector)
+
+            try:
+                updated_stats.save_to_db()
+                response['stats'].append(updated_stats.json())
+            except:
+                return {'message':'Internal server error, upload stats failed.'},500
+
+        return response,201 # echo the created result
