@@ -39,7 +39,7 @@ class Teamsheet(Resource):
                 # member is not admin by default
                 if data['isAdmin'] is None:
                     data['isAdmin'] = False
-                member = TeamsheetModel(clubID,playerID,memberSince,data['isActive'])
+                member = TeamsheetModel(clubID,playerID,memberSince,data['isActive'],data['isAdmin'])
                 member.save_to_db()
                 return member.json() ,201
             except:

@@ -184,7 +184,7 @@ class ResultByTournamentClub(Resource):
         parser.add_argument('info', type=str, required=False)
         parser.add_argument('homeEvents', type=dict,required=False,action='append')
         parser.add_argument('awayEvents', type=dict,required=False,action='append')
-        parser.add_argument('stats', type=dict,required=False,action='append')
+        parser.add_argument('stats', type=dict,required=True,action='append')
 
         data = parser.parse_args()
 
