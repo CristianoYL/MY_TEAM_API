@@ -193,9 +193,9 @@ class ResultByTournamentClub(Resource):
             return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
 
         if data['homeID'] == 0:
-            data['homeID'] == None
+            data['homeID'] = None
         if data['awayID'] == 0:
-            data['awayID'] == None
+            data['awayID'] = None
         unique_keys = {
             'tournamentID' : tournamentID,
             'homeID' : data['homeID'],
