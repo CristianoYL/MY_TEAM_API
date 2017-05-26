@@ -170,9 +170,8 @@ class ResultByTournamentClub(Resource):
 
     def post(self,tournamentID,clubID): # post new game result and update player stats
         parser = reqparse.RequestParser()
-        parser.add_argument('homeID', type=int, required=True,help="The homeID cannot be blank.")
-        parser.add_argument('awayID', type=int, required=True,help="The awayID cannot be blank.")
-        parser.add_argument('tournamentID', type=int, required=True,help="The tournament cannot be blank.")
+        parser.add_argument('homeID', type=int, required=False)
+        parser.add_argument('awayID', type=int, required=False)
         parser.add_argument('homeName', type=str, required=False)
         parser.add_argument('awayName', type=str, required=False)
         parser.add_argument('tournamentName', type=str, required=False)
@@ -193,6 +192,10 @@ class ResultByTournamentClub(Resource):
         except ValueError:
             return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
 
+        if data['homeID'] == 0:
+            data['homeID'] == None
+        if data['awayID'] == 0:
+            data['awayID'] == None
         unique_keys = {
             'tournamentID' : tournamentID,
             'homeID' : data['homeID'],
