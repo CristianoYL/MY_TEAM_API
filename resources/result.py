@@ -219,7 +219,7 @@ class ResultByTournamentClub(Resource):
         result_params = {
             "homeID" : data['homeID'],
             "awayID" : data['awayID'],
-            "tournamentID" : data['tournamentID'],
+            "tournamentID" : tournamentID,
             "homeName" : data['homeName'],
             "awayName" : data['awayName'],
             "tournamentName" : data['tournamentName'],
