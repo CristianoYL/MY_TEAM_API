@@ -10,7 +10,7 @@ from resources.player import Player,PlayerList,PlayerRegistration
 from resources.playerInfo import PlayerInfoByEmail,PlayerInfoByID,PlayerClubInfo
 from resources.clubInfo import ClubInfoByID
 from resources.club import Club,ClubByID,ClubByName,ClubRegistration
-from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub,TournamentRegistration
+from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub,TournamentRegistration,TournamentManagement
 from resources.squad import Squad,SquadByClub,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
 from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,TeamsheetList
@@ -54,6 +54,7 @@ api.add_resource(TournamentByID,'/tournament/id/<string:_id>')
 api.add_resource(TournamentByName,'/tournament/name/<string:name>')
 api.add_resource(TournamentByClub,'/tournament/club/<string:clubID>')
 api.add_resource(TournamentRegistration,'/tournament/club/<string:clubID>/player/<string:playerID>')
+api.add_resource(TournamentManagement,'/tournament/<string:tournamentID>/club/<string:clubID>')
 
 api.add_resource(Squad,'/squad')
 api.add_resource(SquadByClub,'/squad/tournament/<string:tournamentID>/club/<string:clubID>')
@@ -79,4 +80,4 @@ api.add_resource(ResultByTournamentClub,'/result/tournament/<string:tournamentID
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.6',port = 5000,debug=True)
+    app.run(host = '192.168.1.5',port = 5000,debug=True)

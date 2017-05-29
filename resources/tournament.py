@@ -93,6 +93,9 @@ class TournamentRegistration(Resource):
     parser.add_argument('name', type=str, required=True,help="Club name cannot be blank.")
     parser.add_argument('info', type=str, required=True, help="Please add some description about this club.")
 
+    # 1) create a tournament
+    # 2) include the player and club into the squad
+    # 3) create stats for the player
     def post(self,clubID,playerID): # create a tournament
         data = self.parser.parse_args()
 
@@ -166,3 +169,36 @@ class TournamentRegistration(Resource):
             "squad" : squad.json(),
             "stats" : stats.json()
             }, 201
+
+
+class TournamentManagement(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('playerID',type=int,required=True,action='append',help="Player ID cannot be blank.")
+
+    # add team member into tournament squad and then create stats
+    def post(self, tournamentID, clubID):
+        data = self.parser.parse_args()
+        default_number = 0
+        tournament = TournamentModel.find_by_id(tournamentID)
+        if tournament is None:
+            return {"message" : "Tournament not found"}, 404
+
+        for playerID in data['playerID']:
+            # try to create squad
+            if not SquadModel.find_by_tournament_club_player(tournamentID,clubID,playerID):
+                new_squad = SquadModel(tournamentID,clubID,playerID,default_number)
+                try:
+                    new_squad.save_to_db()
+                except:
+                    traceback.print_exc()
+                    return {"message":"Error when creating squad info"}
+            # try to create stats
+            if not StatsModel.find_stats(tournamentID,clubID,playerID):
+                new_stats = StatsModel(tournamentID,clubID,playerID,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+                try:
+                    new_stats.save_to_db()
+                except:
+                    traceback.print_exc()
+                    return {"message":"Error when creating stats info"}
+
+        return {"message":"squads created!"},201
