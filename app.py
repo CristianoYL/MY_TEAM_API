@@ -80,4 +80,4 @@ api.add_resource(ResultByTournamentClub,'/result/tournament/<string:tournamentID
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.5',port = 5000,debug=True)
+    app.run(host = '192.168.1.9',port = 5000,debug=True)
