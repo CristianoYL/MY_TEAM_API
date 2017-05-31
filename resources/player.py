@@ -97,6 +97,19 @@ class Player(Resource):
 
 
 class PlayerByID(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('role', type=str, required=True,help="The player's role cannot be blank.")
+    parser.add_argument('firstName', type=str, required=True, help="The player's firtname cannot be blank.")
+    parser.add_argument('lastName', type=str, required=True, help="The player's lastname cannot be blank.")
+    parser.add_argument('displayName', type=str, required=False)
+    parser.add_argument('age', type=int, required=False)
+    parser.add_argument('height',type=float, required=False)
+    parser.add_argument('weight',type=float, required=False)
+    parser.add_argument('phone', type=str, required=False)
+    parser.add_argument('leftFooted', type=bool, required=False)
+    parser.add_argument('avatar', type=int, required=False)
+
     def delete(self,playerID):     #delete player
         player = PlayerModel.find_by_id(playerID)  # check if already exists
         if player is None:
@@ -110,6 +123,44 @@ class PlayerByID(Resource):
 
         return {'message':'player <id:{}> deleted successfully!'.format(playerID)},200
 
+    def put(self,playerID):     #update player
+        data = self.parser.parse_args()
+        is_new_player = False
+
+        player = PlayerModel.find_by_id(playerID)  # check if already exists
+
+        if player is None:  # if player doesn't exist
+            player = PlayerModel(playerID,**data)    # create a player first
+            is_new_player = True
+        else:
+            player.role = data['role']
+            player.firstName = data['firstName']
+            player.lastName = data['lastName']
+            if data['displayName']:
+                player.displayName = data['displayName']
+            if data['age']:
+                player.age = data['age']
+            if data['height']:
+                player.height = data['height']
+            if data['weight']:
+                player.weight = data['weight']
+            if data['phone']:
+                player.phone = data['phone']
+            if data['leftFooted'] is not None:
+                player.leftFooted = data['leftFooted']
+            if data['avatar']:
+                player.avatar = data['avatar']
+        try:
+            player.save_to_db()
+        except:
+            traceback.print_exc()
+            return {'message':'Internal server error.'},500
+
+        if is_new_player:
+            return player.json(),201
+        else:
+            return player.json(),200
+            
 
 class PlayerList(Resource):
     def get(self):
