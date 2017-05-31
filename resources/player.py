@@ -59,11 +59,13 @@ class Player(Resource):
 
     def put(self,email):     #update player
         data = self.parser.parse_args()
+        is_new_player = False
 
         player = PlayerModel.find_by_email(email)  # check if already exists
 
         if player is None:  # if player doesn't exist
-            player = PlayerModel(None,email,**data)    # create a player model first
+            player = PlayerModel(None,email,**data)    # create a player first
+            is_new_player = True
         else:
             player.role = data['role']
             player.firstName = data['firstName']
@@ -88,7 +90,10 @@ class Player(Resource):
             traceback.print_exc()
             return {'message':'Internal server error.'},500
 
-        return player.json(),200
+        if is_new_player:
+            return player.json(),201
+        else:
+            return player.json(),200
 
 
 class PlayerByID(Resource):
