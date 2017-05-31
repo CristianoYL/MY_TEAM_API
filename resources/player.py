@@ -91,6 +91,21 @@ class Player(Resource):
         return player.json(),200
 
 
+class PlayerByID(Resource):
+    def delete(self,playerID):     #delete player
+        player = PlayerModel.find_by_id(playerID)  # check if already exists
+        if player is None:
+            return {'message': "player <id:{}> doesn't exist".format(playerID)}, 404
+        # if exists, proceed to delete
+        try:        # try to delete
+            player.delete_from_db()
+        except:
+            traceback.print_exc()
+            return {'message':'Internal server error, player deletion failed.'},500
+
+        return {'message':'player <id:{}> deleted successfully!'.format(playerID)},200
+
+
 class PlayerList(Resource):
     def get(self):
         return {'players':[player.json() for player in PlayerModel.find_all()]}, 200
