@@ -15,6 +15,7 @@ from resources.squad import Squad,SquadByClub,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
 from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,TeamsheetList
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,ResultByTournamentClub
+from resources.chat import TournamentChat,ClubChat,PrivateChat,Chat,ChatManager
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
@@ -25,9 +26,9 @@ api = Api(app)
 
 # comment this following section if running on Heroku
 ###############################
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 ###############################
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
@@ -78,7 +79,13 @@ api.add_resource(ResultByHome,'/result/home/<string:clubID>')
 api.add_resource(ResultByAway,'/result/away/<string:clubID>')
 api.add_resource(ResultByTournamentClub,'/result/tournament/<string:tournamentID>/club/<string:clubID>')
 
+api.add_resource(TournamentChat,'/chat/tournament/<string:tournamentID>/club/<string:clubID>')
+api.add_resource(ClubChat,'/chat/club/<string:clubID>')
+api.add_resource(PrivateChat,'/chat/receiver/<string:receiverID>')
+api.add_resource(Chat,'/chat/tournament/<int:tournamentID>/club/<int:clubID>/receiver/<int:receiverID>/sender/<int:senderID>/limit/<int:limit>/offset/<int:offset>')
+api.add_resource(ChatManager,'/chat/<int:id>')
+
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.9',port = 5000,debug=True)
+    app.run(host = '192.168.1.12',port = 5000,debug=True)
