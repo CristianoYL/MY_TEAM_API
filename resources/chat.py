@@ -71,29 +71,58 @@ class PrivateChat(Resource):
 class Chat(Resource):
 
     def get(self,tournamentID,clubID,receiverID,senderID,limit,offset):
-
+        # test if it is tournament chat
         if tournamentID is not None and tournamentID != 0:  # tournamentID specified
             if clubID is not None and clubID != 0:  # clubID specified
                 #find the club tournament chat
                 print("find tour chat!")
                 tournament_chat = ChatModel.find_tournament_chat(tournamentID,clubID,limit,offset)
-                return { "chat" : [chat.json() for chat in tournament_chat] }, 200
+                response = []
+                for chat in tournament_chat:
+                    sender = PlayerModel.find_by_id(chat.senderID)
+                    if sender is None:
+                        return {"message":"Error when finding chat sender"}, 500
+                    response.append({
+                                        "chat" : chat.json(),
+                                        "senderName" : sender.displayName
+                                    })
+                return { "chat" : response}, 200
             # else: clubID unspecified
             return { "message" : "club ID unspecified!" }, 400
 
         # else: tournamentID not specified
+        # test if it is club chat
         if clubID is not None and clubID != 0:  # clubID specified
             # find the club chat
             print("find club chat!")
             club_chat = ChatModel.find_club_chat(clubID,limit,offset)
-            return { "chat" : [chat.json() for chat in club_chat] }, 200
+            response = []
+            for chat in club_chat:
+                sender = PlayerModel.find_by_id(chat.senderID)
+                if sender is None:
+                    return {"message":"Error when finding chat sender"}, 500
+                response.append({
+                                    "chat" : chat.json(),
+                                    "senderName" : sender.displayName
+                                })
+            return { "chat" : response }, 200
 
         # else: clubID unspecified
+        # test if it is private chat
         if receiverID is not None and receiverID != 0:  # receiverID specified
             if senderID is not None and senderID != 0:  # senderID specified
                 print("find private chat!")
                 private_chat = ChatModel.find_private_chat(receiverID,senderID,limit,offset)
-                return { "chat" : [chat.json() for chat in private_chat] }, 200
+                response = []
+                for chat in private_chat:
+                    sender = PlayerModel.find_by_id(chat.senderID)
+                    if sender is None:
+                        return {"message":"Error when finding chat sender"}, 500
+                    response.append({
+                                        "chat" : chat.json(),
+                                        "senderName" : sender.displayName
+                                    })
+                return { "chat" : response }, 200
             # else: senderID unspecified
             return { "message" : "sender ID unspecified!" }, 400
 
