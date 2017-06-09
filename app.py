@@ -26,9 +26,9 @@ api = Api(app)
 
 # comment this following section if running on Heroku
 ###############################
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 ###############################
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
@@ -88,4 +88,4 @@ api.add_resource(ChatManager,'/chat/<int:id>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.12',port = 5000,debug=True)
+    app.run(host = '192.168.150.105',port = 5000,debug=True)
