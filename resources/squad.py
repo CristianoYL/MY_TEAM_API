@@ -6,7 +6,7 @@ from models.squad import SquadModel
 from models.player import PlayerModel
 
 class Squad(Resource):
-    # tid,cid,pid,number,isAdmin
+    # tid,cid,pid,number
     parser = reqparse.RequestParser()
     parser.add_argument('tournamentID', type=int, required=True, help="Tournament id cannot be blank")
     parser.add_argument('clubID', type=int, required=True,help="Club id cannot be blank.")
@@ -58,7 +58,7 @@ class Squad(Resource):
 
 
 class SquadByClub(Resource):
-    # tid,cid,pid,number,isAdmin
+    # tid,cid,pid,number
 
     def get(self,tournamentID,clubID):
         squad = []
@@ -83,7 +83,7 @@ class SquadByClub(Resource):
 
 
 class SquadTotal(Resource):
-    # tid,cid,pid,number,isAdmin
+    # tid,cid,pid,number
 
     def get(self):
         return {'squad':[player.json() for player in SquadModel.find_all()]},200

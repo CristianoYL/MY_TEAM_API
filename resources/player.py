@@ -4,7 +4,7 @@ from flask_jwt import jwt_required
 from datetime import date
 
 from models.player import PlayerModel
-from models.teamsheet import TeamsheetModel
+from models.member import MemberModel
 
 class Player(Resource):
     #(id INTEGERPRIMARY KEY, email text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
@@ -160,7 +160,7 @@ class PlayerByID(Resource):
             return player.json(),201
         else:
             return player.json(),200
-            
+
 
 class PlayerList(Resource):
     def get(self):
@@ -195,11 +195,11 @@ class PlayerRegistration(Resource):
             player.save_to_db()
             try:
                 current_date = date.today()
-                teamsheet = TeamsheetModel(clubID,player.id,current_date,True,False)
-                teamsheet.save_to_db()
+                member = MemberModel(clubID,player.id,current_date,True,False)
+                member.save_to_db()
                 return {
                     'player' : player.json(),
-                    'teamsheet' : teamsheet.json()
+                    'member' : member.json()
                     }, 201
             except:
                 try:
@@ -208,7 +208,7 @@ class PlayerRegistration(Resource):
                     traceback.print_exc()
                     return {'message':'Internal server error! Roll back error!.'},500
                 traceback.print_exc()
-                return {'message':'Internal server error! Failed to add player into club teamsheet.'},500
+                return {'message':'Internal server error! Failed to add player into club member.'},500
         except:
             traceback.print_exc()
             return {'message':'Internal server error! Failed to create player'},500
@@ -220,11 +220,11 @@ class PlayerRegistration(Resource):
             player.save_to_db()
             try:
                 current_date = date.today()
-                teamsheet = TeamsheetModel(clubID,player.id,current_date,True,False)
-                teamsheet.save_to_db()
+                member = MemberModel(clubID,player.id,current_date,True,False)
+                member.save_to_db()
                 return {
                     'player' : player.json(),
-                    'teamsheet' : teamsheet.json()
+                    'member' : member.json()
                     }, 201
             except:
                 try:
@@ -233,7 +233,7 @@ class PlayerRegistration(Resource):
                     traceback.print_exc()
                     return {'message':'Internal server error! Roll back error!.'},500
                 traceback.print_exc()
-                return {'message':'Internal server error! Failed to add player into club teamsheet.'},500
+                return {'message':'Internal server error! Failed to add player into club member.'},500
         except:
             traceback.print_exc()
             return {'message':'Internal server error! Failed to create player'},500

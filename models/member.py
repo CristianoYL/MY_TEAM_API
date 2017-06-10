@@ -1,20 +1,21 @@
 from db import db
 
-class TeamsheetModel(db.Model):
-    __tablename__ = 'teamsheet'
+class MemberModel(db.Model):
+    __tablename__ = 'member'
 
     clubID = db.Column(db.Integer, db.ForeignKey('club.id'), primary_key=True)
     playerID = db.Column(db.Integer, db.ForeignKey('player.id'), primary_key=True)
     memberSince = db.Column(db.Date)
     isActive = db.Column(db.Boolean)
-    isAdmin = db.Column(db.Boolean)
+    priority = db.Column(db.Integer)
+    # priority: 0-applicant,1-member, 2-admin, 3-leader
 
-    def __init__(self,clubID,playerID,memberSince,isActive,isAdmin):
+    def __init__(self,clubID,playerID,memberSince,isActive,priority):
         self.clubID = clubID
         self.playerID = playerID
         self.memberSince = memberSince
         self.isActive = isActive
-        self.isAdmin = isAdmin
+        self.priority = priority
 
     def json(self):
         return {
@@ -22,7 +23,7 @@ class TeamsheetModel(db.Model):
             "playerID" : self.playerID,
             "memberSince" : self.memberSince.isoformat(),
             "isActive" : self.isActive,
-            "isAdmin" : self.isAdmin
+            "priority" : self.priority
         }
 
     @classmethod

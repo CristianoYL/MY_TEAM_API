@@ -13,22 +13,21 @@ from resources.club import Club,ClubByID,ClubByName,ClubRegistration
 from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub,TournamentRegistration,TournamentManagement
 from resources.squad import Squad,SquadByClub,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
-from resources.teamsheet import Teamsheet,TeamsheetByPlayer,TeamsheetByClub,TeamsheetList
+from resources.member import Member,MemberByPlayer,MemberByClub,MemberList
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,ResultByTournamentClub
 from resources.chat import TournamentChat,ClubChat,PrivateChat,Chat,ChatManager
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'os.environ.get('DATABASE_URL','sqlite:///myteam.db')'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
 
 # comment this following section if running on Heroku
 ###############################
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 ###############################
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
@@ -68,10 +67,10 @@ api.add_resource(StatsByClubPlayer,'/stats/club/<string:clubID>/player/<string:p
 api.add_resource(StatsByTournamentClub,'/stats/tournament/<string:tournamentID>/club/<string:clubID>')
 api.add_resource(StatsList,'/stats')
 
-api.add_resource(Teamsheet,'/teamsheet/club/<string:clubID>/player/<string:playerID>')
-api.add_resource(TeamsheetByPlayer,'/teamsheet/player/<string:playerID>')
-api.add_resource(TeamsheetByClub,'/teamsheet/club/<string:clubID>')
-api.add_resource(TeamsheetList,'/teamsheet')
+api.add_resource(Member,'/member/club/<string:clubID>/player/<string:playerID>')
+api.add_resource(MemberByPlayer,'/member/player/<string:playerID>')
+api.add_resource(MemberByClub,'/member/club/<string:clubID>')
+api.add_resource(MemberList,'/member')
 
 api.add_resource(Result,'/result')
 api.add_resource(ResultByClub,'/result/club/<string:clubID>')
@@ -88,4 +87,4 @@ api.add_resource(ChatManager,'/chat/<int:id>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.150.105',port = 5000,debug=True)
+    app.run(host = '192.168.1.6',port = 5000,debug=True)

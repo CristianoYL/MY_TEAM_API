@@ -2,7 +2,7 @@ from flask_restful import Resource
 
 
 from models.player import PlayerModel
-from models.teamsheet import TeamsheetModel
+from models.member import MemberModel
 from models.stats import StatsModel
 from models.result import ResultModel
 from models.tournament import TournamentModel
@@ -17,12 +17,12 @@ class PlayerInfoByID(Resource):
         if not player:
             return {'message': 'Player info not found'}, 404
 
-        teamsheets = TeamsheetModel.find_by_player(playerID)
-        if not teamsheets:
-            return {'message': 'Player teamsheet info not found'}, 404
+        members = MemberModel.find_by_player(playerID)
+        if not members:
+            return {'message': 'Player member info not found'}, 404
         clubs = []
-        for teamsheet in teamsheets:
-            club = ClubModel.find_by_id(teamsheet.clubID)
+        for member in members:
+            club = ClubModel.find_by_id(member.clubID)
             if not club:
                 return {'message': 'Player club info not found'}, 404
             clubs.append(club.json())

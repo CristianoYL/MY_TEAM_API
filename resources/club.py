@@ -4,7 +4,7 @@ from flask_jwt import jwt_required
 from datetime import date
 
 from models.club import ClubModel
-from models.teamsheet import TeamsheetModel
+from models.member import MemberModel
 
 class ClubByID(Resource):
     # (id,name,info)
@@ -88,7 +88,7 @@ class ClubRegistration(Resource):
     parser.add_argument('name', type=str, required=True,help="Club name cannot be blank.")
     parser.add_argument('info', type=str, required=True, help="Please add some description about this club.")
 
-    def post(self,playerID): # create a club
+    def post(self,playerID): # player creates a club
         data = self.parser.parse_args()
 
         clubs = ClubModel.find_by_name(data['name'])
@@ -105,12 +105,13 @@ class ClubRegistration(Resource):
             club.save_to_db()
             try:
                 current_date = date.today()
-                teamsheet = TeamsheetModel(club.id,playerID,current_date,True,True)
-                teamsheet.save_to_db()
-            except: # if teamsheet creation failed, delete this club
+                # priority=3 means leader
+                member = MemberModel(club.id,playerID,current_date,True,3)
+                member.save_to_db()
+            except: # if member creation failed, delete this club
                 club.delete_from_db()
                 traceback.print_exc()
-                return {"message":"Internal server error, club teamsheet creation failed."}, 500
+                return {"message":"Internal server error, club member creation failed."}, 500
         except:
             traceback.print_exc()
             return {"message":"Internal server error, club creation failed."}, 500

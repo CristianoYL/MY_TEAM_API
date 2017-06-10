@@ -2,7 +2,7 @@ from flask_restful import Resource
 
 from models.squad import SquadModel
 from models.club import ClubModel
-from models.teamsheet import TeamsheetModel
+from models.member import MemberModel
 from models.tournament import TournamentModel
 from functions.performance import GamePerformance
 
@@ -12,7 +12,7 @@ class ClubInfoByID(Resource):
         clubInfo = {
             "club" : None,
             "tournaments" : [],
-            "teamsheet" : [],
+            "member" : [],
             "gamePerformance":{
                 "win" : 0,
                 "draw" : 0,
@@ -41,8 +41,8 @@ class ClubInfoByID(Resource):
                 return {"message": "Tournament not found"}, 404
             clubInfo["tournaments"].append(tournament.json())
 
-        # get teamsheet
-        clubInfo["teamsheet"] = [teamsheet.json() for teamsheet in TeamsheetModel.find_by_club(clubID)]
+        # get member
+        clubInfo["member"] = [member.json() for member in MemberModel.find_by_club(clubID)]
 
         gamePerformance = GamePerformance.get_club_total_performance(clubID)
         if gamePerformance:
