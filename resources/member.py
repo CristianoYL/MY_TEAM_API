@@ -87,8 +87,8 @@ class Member(Resource):
 
 
 class MemberByPlayer(Resource):
-    # (clubID,playerID,memberSince,number,isActive)
-    def get(self,playerID):
+
+    def get(self,playerID): # get player's club and member info
         members = MemberModel.find_by_player(playerID)
         member_list = []
         for member in members:
@@ -106,7 +106,8 @@ class MemberByClub(Resource):
     # (clubID,playerID,memberSince,number,isActive)
     parser = reqparse.RequestParser()
     parser.add_argument('isActive', type=bool, required=False)
-    def get(self,clubID):
+
+    def get(self,clubID):   # get club's player and member info
         data = self.parser.parse_args()
         # check if only want to find active players
         if data['isActive']:
@@ -122,7 +123,7 @@ class MemberByClub(Resource):
                     "player" : player.json(),
                     "member" : member.json()
                 })
-        return {'member': member_list},200
+        return {"member" : member_list},200
 
 
 class MemberList(Resource):

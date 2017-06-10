@@ -195,7 +195,7 @@ class PlayerRegistration(Resource):
             player.save_to_db()
             try:
                 current_date = date.today()
-                member = MemberModel(clubID,player.id,current_date,True,False)
+                member = MemberModel(clubID,player.id,current_date,True,1)
                 member.save_to_db()
                 return {
                     'player' : player.json(),
