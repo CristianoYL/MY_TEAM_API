@@ -16,6 +16,7 @@ from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,Stat
 from resources.member import Member,MemberByPlayer,MemberByClub,MemberList
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,ResultByTournamentClub
 from resources.chat import TournamentChat,ClubChat,PrivateChat,Chat,ChatManager
+from resources.location import Location, LocationByClub
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
@@ -25,9 +26,9 @@ api = Api(app)
 
 # comment this following section if running on Heroku
 ###############################
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 ###############################
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
@@ -84,7 +85,11 @@ api.add_resource(PrivateChat,'/chat/private/<string:receiverID>')
 api.add_resource(Chat,'/chat/tournament/<int:tournamentID>/club/<int:clubID>/receiver/<int:receiverID>/sender/<int:senderID>/limit/<int:limit>/offset/<int:offset>')
 api.add_resource(ChatManager,'/chat/<int:id>')
 
+api.add_resource(Location,'/location/club/<int:clubID>/player/<int:playerID>')
+api.add_resource(LocationByClub,'/location/club/<int:clubID>')
+
+
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.6',port = 5000,debug=True)
+    app.run(host = '192.168.1.9',port = 5000,debug=True)
