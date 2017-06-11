@@ -131,3 +131,28 @@ class MemberList(Resource):
     def get(self):
         teams = MemberModel.find_all()
         return {'member':[member.json() for member in teams]},200
+
+
+class MemberRequest(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('playerID', type=int, required=True, help="This field cannot be empty")
+    def post(self,clubID):  # request to join club
+        data = self.parser.parse_args()
+        member = MemberModel.find_club_player(clubID,data["playerID"])
+        if member:
+            return {"message":"Request already sent, please wait for club admins to process request."}, 400
+        # else try to create new member
+        try:
+            # use today's date
+            data["memberSince"] = date.today()
+            # new member is active by default
+            data['isActive'] = True
+            # priority = 0 means applicant
+            data['priority'] = 0
+            member = MemberModel(clubID,**data)
+            member.save_to_db()
+            return { "member" : member.json() }, 201
+        except:
+            traceback.print_exc()
+            return { "message": "Internal server error, create club member failed."} ,500

@@ -13,7 +13,7 @@ from resources.club import Club,ClubByID,ClubByName,ClubRegistration
 from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub,TournamentRegistration,TournamentManagement
 from resources.squad import Squad,SquadByClub,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
-from resources.member import Member,MemberByPlayer,MemberByClub,MemberList
+from resources.member import Member,MemberByPlayer,MemberByClub,MemberList,MemberRequest
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,ResultByTournamentClub
 from resources.chat import TournamentChat,ClubChat,PrivateChat,Chat,ChatManager
 from resources.location import Location, LocationByClub
@@ -72,6 +72,7 @@ api.add_resource(Member,'/member/club/<string:clubID>/player/<string:playerID>')
 api.add_resource(MemberByPlayer,'/member/player/<string:playerID>')
 api.add_resource(MemberByClub,'/member/club/<string:clubID>')
 api.add_resource(MemberList,'/member')
+api.add_resource(MemberRequest,'/member/request/<int:clubID>')
 
 api.add_resource(Result,'/result')
 api.add_resource(ResultByClub,'/result/club/<string:clubID>')
