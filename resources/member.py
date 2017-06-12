@@ -141,7 +141,11 @@ class MemberRequest(Resource):
         data = self.parser.parse_args()
         member = MemberModel.find_club_player(clubID,data["playerID"])
         if member:
-            return {"message":"Request already sent, please wait for club admins to process request."}, 400
+            if member.priority > 0:
+                return {"message":"You are already a member in this club!"}, 400
+            else:
+                return {"message":"Request already sent, please wait for club admins to process request."}, 400
+
         # else try to create new member
         try:
             # use today's date
