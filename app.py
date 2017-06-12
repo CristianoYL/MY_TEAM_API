@@ -83,7 +83,7 @@ api.add_resource(ResultByTournamentClub,'/result/tournament/<string:tournamentID
 api.add_resource(TournamentChat,'/chat/tournament/<string:tournamentID>/club/<string:clubID>')
 api.add_resource(ClubChat,'/chat/club/<string:clubID>')
 api.add_resource(PrivateChat,'/chat/private/<string:receiverID>')
-api.add_resource(Chat,'/chat/tournament/<int:tournamentID>/club/<int:clubID>/receiver/<int:receiverID>/sender/<int:senderID>/limit/<int:limit>/offset/<int:offset>')
+api.add_resource(Chat,'/chat/tournament/<int:tournamentID>/club/<int:clubID>/receiver/<int:receiverID>/sender/<int:senderID>/limit/<int:limit>/before/<int:beforeID>/after/<int:afterID>')
 api.add_resource(ChatManager,'/chat/<int:id>')
 
 api.add_resource(Location,'/location/club/<int:clubID>/player/<int:playerID>')

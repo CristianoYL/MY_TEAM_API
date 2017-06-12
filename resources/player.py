@@ -2,6 +2,7 @@ import traceback
 from flask_restful import Resource,reqparse
 from flask_jwt import jwt_required
 from datetime import date
+from db import db
 
 from models.player import PlayerModel
 from models.member import MemberModel
@@ -188,8 +189,42 @@ class PlayerRegistration(Resource):
         playersWithSameFullName = PlayerModel.find_by_fullname(data['firstName'],data['lastName'])
         if playersWithSameFullName.first(): # if players with same full name exists
             #   return these players to client and let them decide what to do next
-            return {"players":[player.json() for player in playersWithSameFullName]}, 400
+            return {
+                "players":[player.json() for player in playersWithSameFullName],
+                "message" : "players with same full name already exist"}, 400
 
+        player = PlayerModel(None,None,**data)
+        # try to create player
+        try:
+            player.save_to_db()
+        except:
+            traceback.print_exc()
+            return {'message':'Internal server error! Failed to create player'},500
+        # player creation successful, try to create member
+        try:
+            current_date = date.today()
+            member = MemberModel(clubID,player.id,current_date,True,1)
+            member.save_to_db()
+            # member creation also successful, return response
+            return {
+                'player' : player.json(),
+                'member' : member.json()
+                }, 201
+        except: # member creation failed
+            traceback.print_exc()
+            db.session.rollback()
+        # try to roll back, delete the just created player
+        print("try to roll back, delete player")
+        try:
+            player.delete_from_db()
+        except: # roll back error, failed to delete the just created player
+            traceback.print_exc()
+            return {'message':'Internal server error! Roll back error!.'},500
+        # roll back successfully
+        return {'message':'Internal server error! Failed to add player into club member.'},500
+
+    def put(self,clubID):   # force to create a new player in this club, ignore full name redundancy
+        data = self.parser.parse_args()
         player = PlayerModel(None,None,**data)
         try:
             player.save_to_db()
@@ -203,31 +238,7 @@ class PlayerRegistration(Resource):
                     }, 201
             except:
                 try:
-                    player.delete_from_db()
-                except:
-                    traceback.print_exc()
-                    return {'message':'Internal server error! Roll back error!.'},500
-                traceback.print_exc()
-                return {'message':'Internal server error! Failed to add player into club member.'},500
-        except:
-            traceback.print_exc()
-            return {'message':'Internal server error! Failed to create player'},500
-
-    def put(self,clubID):   # force to create a new player in this club
-        data = self.parser.parse_args()
-        player = PlayerModel(None,None,**data)
-        try:
-            player.save_to_db()
-            try:
-                current_date = date.today()
-                member = MemberModel(clubID,player.id,current_date,True,False)
-                member.save_to_db()
-                return {
-                    'player' : player.json(),
-                    'member' : member.json()
-                    }, 201
-            except:
-                try:
+                    db.session.rollback()
                     player.delete_from_db()
                 except:
                     traceback.print_exc()
