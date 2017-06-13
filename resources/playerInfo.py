@@ -25,7 +25,9 @@ class PlayerInfoByID(Resource):
             club = ClubModel.find_by_id(member.clubID)
             if not club:
                 return {'message': 'Player club info not found'}, 404
-            clubs.append(club.json())
+            club_info = club.json();
+            club_info["priority"] = member.priority
+            clubs.append(club_info)
 
         totalStats = StatsModel.find_player_total_stats(playerID)
         if not totalStats:
