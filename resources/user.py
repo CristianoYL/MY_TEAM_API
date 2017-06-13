@@ -1,6 +1,6 @@
 from flask_restful import Resource,reqparse
 from werkzeug.security import safe_str_cmp
-from flask_jwt import jwt_required
+from flask_jwt import jwt_required,current_identity
 
 from models.user import UserModel
 
@@ -43,19 +43,15 @@ class UserUpdate(Resource):
 
     @classmethod
     @jwt_required()
-    ## TODO: use jwt info to identify user, not the email param.
-    def post(cls,email):   #change password
+    def put(cls):   #change password
+        user = current_identity
         new_password = cls.parser.parse_args()['password']
-        user = UserModel.find_by_email(email)
-        if user:    # user exists
-            if safe_str_cmp(user.password,new_password):    # no change in new password
-                return {'message':'You cannot use the same password!'}, 400
-            # if password is valid
-            user.password = new_password
-            try:
-                user.save_to_db()
-            except:
-                return {'message':'Internal Server Error, change password failed!'}, 500
-            return {'message':'password updated!'}, 200
-        # if account doesn't exists
-        return {'message':'Account not found!'}, 404
+        if safe_str_cmp(user.password,new_password):    # no change in new password
+            return {'message':'You cannot use the same password!'}, 400
+        # if password is valid
+        user.password = new_password
+        try:
+            user.save_to_db()
+        except:
+            return {'message':'Internal Server Error, change password failed!'}, 500
+        return {'message':'password updated!'}, 200

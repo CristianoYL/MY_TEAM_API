@@ -88,7 +88,7 @@ class Member(Resource):
 
 class MemberByPlayer(Resource):
 
-    def get(self,playerID): # get player's club and member info
+    def get(self,playerID): # get player's all club member info
         members = MemberModel.find_by_player(playerID)
         member_list = []
         for member in members:
@@ -99,7 +99,7 @@ class MemberByPlayer(Resource):
                 "club" : club.json(),
                 "member" : member.json()
             })
-        return {"member" : member_list},200
+        return {"members" : member_list},200
 
 
 class MemberByClub(Resource):
@@ -107,7 +107,7 @@ class MemberByClub(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('isActive', type=bool, required=False)
 
-    def get(self,clubID):   # get club's player and member info
+    def get(self,clubID):   # get club's all player and member info
         data = self.parser.parse_args()
         # check if only want to find active players
         if data['isActive']:
@@ -123,14 +123,14 @@ class MemberByClub(Resource):
                     "player" : player.json(),
                     "member" : member.json()
                 })
-        return {"member" : member_list},200
+        return {"members" : member_list},200
 
 
 class MemberList(Resource):
     # (clubID,playerID,memberSince,number,isActive)
     def get(self):
         teams = MemberModel.find_all()
-        return {'member':[member.json() for member in teams]},200
+        return {'members':[member.json() for member in teams]},200
 
 
 class MemberRequest(Resource):

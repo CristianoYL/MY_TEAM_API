@@ -24,16 +24,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
 
-# comment this following section if running on Heroku
+# comment the following section if running on Heroku
 ###############################
 # @app.before_first_request
 # def create_tables():
 #     db.create_all()
 ###############################
+
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
 api.add_resource(User,'/user')
-api.add_resource(UserUpdate,'/user/<string:email>')
+api.add_resource(UserUpdate,'/user/password')
 
 api.add_resource(Player,'/player/<string:email>')
 api.add_resource(PlayerByID,'/player/id/<string:playerID>')

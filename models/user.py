@@ -12,6 +12,13 @@ class UserModel(db.Model):
         self.email = email
         self.password = password
 
+    def json(self):
+        return {
+            "id" : self.id,
+            "email" : self.email,
+            "password" : self.password
+        }
+
     @classmethod
     def find_all(cls):
         return cls.query.all()
