@@ -100,9 +100,10 @@ class PlayerByEmail(Resource):
 class PlayerByID(Resource):
 
     parser = reqparse.RequestParser()
-    parser.add_argument('role', type=str, required=True,help="The player's role cannot be blank.")
-    parser.add_argument('firstName', type=str, required=True, help="The player's firtname cannot be blank.")
-    parser.add_argument('lastName', type=str, required=True, help="The player's lastname cannot be blank.")
+    parser.add_argument('email', type=str, required=False)
+    parser.add_argument('role', type=str, required=False)
+    parser.add_argument('firstName', type=str, required=False)
+    parser.add_argument('lastName', type=str, required=False)
     parser.add_argument('displayName', type=str, required=False)
     parser.add_argument('age', type=int, required=False)
     parser.add_argument('height',type=float, required=False)
@@ -134,16 +135,22 @@ class PlayerByID(Resource):
     def put(self,playerID):     #update player
         data = self.parser.parse_args()
         is_new_player = False
-
         player = PlayerModel.find_by_id(playerID)  # check if already exists
 
         if player is None:  # if player doesn't exist
+            if data['firstName'] is None or data['lastName'] is None:
+                return { 'message' : "Please provide player's fullname." },400
+            if data['displayName'] is None:
+                data['firstName'] = data['firstName'] + ' ' + data['lastName']
             player = PlayerModel(playerID,**data)    # create a player first
             is_new_player = True
         else:
-            player.role = data['role']
-            player.firstName = data['firstName']
-            player.lastName = data['lastName']
+            if data['role']:
+                player.role = data['role']
+            if data['firstName']:
+                player.firstName = data['firstName']
+            if data['lastName']:
+                player.lastName = data['lastName']
             if data['displayName']:
                 player.displayName = data['displayName']
             if data['age']:
