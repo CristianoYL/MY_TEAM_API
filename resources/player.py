@@ -111,6 +111,13 @@ class PlayerByID(Resource):
     parser.add_argument('leftFooted', type=bool, required=False)
     parser.add_argument('avatar', type=int, required=False)
 
+    def get(self,playerID):
+        player = PlayerModel.find_by_id(playerID)
+        if player:
+            return player.json(), 200
+
+        return {'message': 'player not found'}, 404
+
     def delete(self,playerID):     #delete player
         player = PlayerModel.find_by_id(playerID)  # check if already exists
         if player is None:
