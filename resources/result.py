@@ -193,21 +193,9 @@ class ResultByTournamentClub(Resource):
             return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
 
         if data['homeID'] == 0:
-            opponent_club = ClubModel(None,data['homeName'],"Temporary Opponent Club")
-            try:
-                opponent_club.save_to_db()
-                data['homeID'] = opponent_club.id
-            except:
-                traceback.print_exc()
-                return {'message': 'failed to create opponent club'}, 500
+            data['homeID'] = None
         if data['awayID'] == 0:
-            opponent_club = ClubModel(None,data['awayName'],"Temporary Opponent Club")
-            try:
-                opponent_club.save_to_db()
-                data['awayID'] = opponent_club.id
-            except:
-                traceback.print_exc()
-                return {'message': 'failed to create opponent club'}, 500
+            data['awayID'] = None
         unique_keys = {
             'tournamentID' : tournamentID,
             'homeID' : data['homeID'],
