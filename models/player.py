@@ -5,7 +5,7 @@ class PlayerModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(50), db.ForeignKey('user.email'))
-    role = db.Column(db.String(10))
+    role = db.Column(db.String(30))
     firstName = db.Column(db.String(50))
     lastName = db.Column(db.String(50))
     displayName = db.Column(db.String(50))
