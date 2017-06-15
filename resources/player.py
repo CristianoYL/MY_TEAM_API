@@ -7,7 +7,7 @@ from db import db
 from models.player import PlayerModel
 from models.member import MemberModel
 
-class Player(Resource):
+class PlayerByEmail(Resource):
     #(id INTEGERPRIMARY KEY, email text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
     parser = reqparse.RequestParser()
     parser.add_argument('role', type=str, required=True,help="The player's role cannot be blank.")

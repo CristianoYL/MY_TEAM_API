@@ -6,7 +6,7 @@ from flask_jwt import JWT, jwt_required
 from security import authenticate, identity
 
 from resources.user import User,UserUpdate
-from resources.player import Player,PlayerByID,PlayerList,PlayerRegistration
+from resources.player import PlayerByEmail,PlayerByID,PlayerList,PlayerRegistration
 from resources.playerInfo import PlayerInfoByEmail,PlayerInfoByID,PlayerClubInfo
 from resources.clubInfo import ClubInfoByID
 from resources.club import Club,ClubByID,ClubByName,ClubRegistration
@@ -36,7 +36,7 @@ jwt = JWT(app,authenticate,identity)    #set up '/auth'
 api.add_resource(User,'/user')
 api.add_resource(UserUpdate,'/user/password')
 
-api.add_resource(Player,'/player/<string:email>')
+api.add_resource(PlayerByEmail,'/player/email/<string:email>')
 api.add_resource(PlayerByID,'/player/id/<string:playerID>')
 api.add_resource(PlayerRegistration,'/player/club/<string:clubID>')
 api.add_resource(PlayerList,'/player')
