@@ -6,6 +6,7 @@ from datetime import date,datetime
 from models.member import MemberModel
 from models.club import ClubModel
 from models.player import PlayerModel
+from util.topic import Topic
 
 class Member(Resource):
     # (clubID,playerID,memberSince)
@@ -44,7 +45,11 @@ class Member(Resource):
                 data['priority'] = 1
             member = MemberModel(clubID,playerID,memberSince,data['isActive'],data['priority'])
             member.save_to_db()
-            return member.json() ,201
+            if Topic.add_player_to_club_chat(playerID,clubID):
+                return member.json() ,201
+            else:
+                member.delete_from_db()
+                return {'message':'Internal server error, failed to add player to club chat.'} ,500
         except:
             traceback.print_exc()
             return { "message": "Internal server error, create club member failed."} ,500
@@ -133,7 +138,7 @@ class MemberList(Resource):
         return {'members':[member.json() for member in teams]},200
 
 
-class MemberRequest(Resource):
+class MemberRequest(Resource):  # deal with request to join club
 
     parser = reqparse.RequestParser()
     parser.add_argument('playerID', type=int, required=True, help="This field cannot be empty")

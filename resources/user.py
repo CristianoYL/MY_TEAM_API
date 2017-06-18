@@ -1,6 +1,7 @@
 from flask_restful import Resource,reqparse
 from werkzeug.security import safe_str_cmp
 from flask_jwt import jwt_required,current_identity
+import requests
 
 from models.user import UserModel
 
@@ -35,7 +36,6 @@ class User(Resource):
         except:
             return {'message':'Internal Server Error, registration failed!'}, 500
         return {'message':'Register account <{}> succeeded!'.format(credentials['email'])}, 201
-
 
 class UserUpdate(Resource):
     parser = reqparse.RequestParser()
