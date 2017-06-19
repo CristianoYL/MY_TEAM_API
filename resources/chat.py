@@ -90,6 +90,7 @@ class Chat(Resource):
                                         "chat" : chat.json(),
                                         "senderName" : sender.displayName
                                     })
+                response.reverse()
                 return { "chat" : response}, 200
             # else: clubID unspecified
             return { "message" : "club ID unspecified!" }, 400
@@ -108,6 +109,7 @@ class Chat(Resource):
                                     "chat" : chat.json(),
                                     "senderName" : sender.displayName
                                 })
+            response.reverse()
             return { "chat" : response }, 200
 
         # else: clubID unspecified
@@ -116,7 +118,9 @@ class Chat(Resource):
             if senderID is not None and senderID != 0:  # senderID specified
                 print("find private chat!")
                 private_chat = ChatModel.find_private_chat(receiverID,senderID,limit,beforeID,afterID)
-                return { "chat" : [chat.json() for chat in private_chat] }, 200
+                response = [chat.json() for chat in private_chat]
+                response.reverse()
+                return { "chat" : response }, 200
             # else: senderID unspecified
             return { "message" : "sender ID unspecified!" }, 400
         # else: receiverID unspecified
