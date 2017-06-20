@@ -1,9 +1,9 @@
 import traceback
 from flask_restful import Resource,reqparse
+from datetime import datetime
 
 from models.player import PlayerModel
 from models.location import LocationModel
-from datetime import datetime
 
 class Location(Resource):
 

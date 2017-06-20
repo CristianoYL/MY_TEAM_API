@@ -6,7 +6,7 @@ from datetime import date,datetime
 from models.member import MemberModel
 from models.club import ClubModel
 from models.player import PlayerModel
-from util.topic import Topic
+from utils.firebase import FireBase
 
 class Member(Resource):
     # (clubID,playerID,memberSince)
@@ -45,7 +45,7 @@ class Member(Resource):
                 data['priority'] = 1
             member = MemberModel(clubID,playerID,memberSince,data['isActive'],data['priority'])
             member.save_to_db()
-            if Topic.add_player_to_club_chat(playerID,clubID):
+            if FireBase.add_player_to_club_chat(playerID,clubID):
                 return member.json() ,201
             else:
                 member.delete_from_db()

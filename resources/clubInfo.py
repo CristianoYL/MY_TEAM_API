@@ -4,7 +4,7 @@ from models.squad import SquadModel
 from models.club import ClubModel
 from models.member import MemberModel
 from models.tournament import TournamentModel
-from util.performance import GamePerformance
+from utils.performance import GamePerformance
 
 
 class ClubInfoByID(Resource):

@@ -30,7 +30,7 @@ class Token(Resource):
                 return { "token" : token.json() }, 200
             except:
                 traceback.print_exc()
-                return { "token" : "Internal server error, failed to update token." }, 500
+                return { "message" : "Internal server error, failed to update token." }, 500
         # else token doesn't exist, then create a new token
         token = TokenModel(None,playerID,**data)
         try:
@@ -38,7 +38,7 @@ class Token(Resource):
             return { "token" : token.json() }, 201
         except:
             traceback.print_exc()
-            return { "token" : "Internal server error, failed to create token." }, 500
+            return { "message" : "Internal server error, failed to create token." }, 500
 
 
     def delete(self,playerID):   # delete an existing token

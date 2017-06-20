@@ -5,6 +5,7 @@ from datetime import date
 
 from models.club import ClubModel
 from models.member import MemberModel
+from utils.firebase import FireBase
 
 class ClubByID(Resource):
     # (id,name,info)
@@ -115,4 +116,13 @@ class ClubRegistration(Resource):
         except:
             traceback.print_exc()
             return {"message":"Internal server error, club creation failed."}, 500
-        return club.json() ,201   # echo the created club info
+
+        if FireBase.add_player_to_club_chat(playerID,club.id):
+            return club.json() ,201   # echo the created club info
+        try:
+            member.delete_from_db()
+            club.delete_from_db()
+            traceback.print_exc()
+            return {"message":"Internal server error, fail to add player to club chat, roll back..."}, 500
+        except:
+            return {"message":"Internal server error, fail to add player to club chat, roll back error"}, 500

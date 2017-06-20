@@ -6,6 +6,7 @@ from db import db
 
 from models.player import PlayerModel
 from models.member import MemberModel
+from models.token import TokenModel
 
 class PlayerByEmail(Resource):
     #(id INTEGERPRIMARY KEY, email text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
@@ -42,7 +43,6 @@ class PlayerByEmail(Resource):
         except:
             traceback.print_exc()
             return {'message':'Internal server error, player creation failed.'},500
-
         return player.json(),201 # echo the created player info
 
     def delete(self,email):     #delete player

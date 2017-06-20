@@ -1,9 +1,12 @@
 import traceback
 from flask_restful import Resource,reqparse
+import requests
+import json
 
 from models.player import PlayerModel
 from models.chat import ChatModel
 from datetime import datetime
+from utils.firebase import FireBase
 
 class TournamentChat(Resource):
 
@@ -40,11 +43,15 @@ class ClubChat(Resource):
         # (id, tournamentID, clubID, receiverID, senderID, messageType, messageContent, time)
         chat = ChatModel(None,None,clubID,None,**data)
         try:
-            chat.save_to_db()
+            chat.save_to_db()   # save chat to database
         except:
             traceback.print_exc()
             return {'message':'failed to store chat message'},500
-        return {'chat':chat.json()},201
+
+        # notify club members of the new chat message
+        if FireBase.send_club_chat_notification(clubID):
+            return {'chat':chat.json()},201
+        return {'message':"Internal server error, failed to send push notification"},500
 
 
 class PrivateChat(Resource):

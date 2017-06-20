@@ -3,7 +3,7 @@ from flask_restful import Resource,reqparse
 from flask_jwt import jwt_required
 
 from models.stats import StatsModel
-from util.performance import GamePerformance
+from utils.performance import GamePerformance
 
 class Stats(Resource):
     # (tournamentID, playerID, attendance, appearance, start, goal,

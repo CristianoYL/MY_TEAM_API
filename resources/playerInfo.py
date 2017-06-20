@@ -8,7 +8,7 @@ from models.result import ResultModel
 from models.tournament import TournamentModel
 from models.squad import SquadModel
 from models.club import ClubModel
-from util.performance import GamePerformance
+from utils.performance import GamePerformance
 
 class PlayerInfoByID(Resource):
     @classmethod
