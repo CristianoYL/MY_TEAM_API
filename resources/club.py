@@ -122,7 +122,7 @@ class ClubRegistration(Resource):
         try:
             member.delete_from_db()
             club.delete_from_db()
-            traceback.print_exc()
             return {"message":"Internal server error, fail to add player to club chat, roll back..."}, 500
         except:
+            traceback.print_exc()
             return {"message":"Internal server error, fail to add player to club chat, roll back error"}, 500

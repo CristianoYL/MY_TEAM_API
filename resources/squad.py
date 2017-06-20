@@ -4,6 +4,7 @@ from flask_jwt import jwt_required
 
 from models.squad import SquadModel
 from models.player import PlayerModel
+from utils.firebase import FireBase
 
 class Squad(Resource):
     # tid,cid,pid,number
@@ -25,7 +26,11 @@ class Squad(Resource):
         try:
             squad = SquadModel(**data)
             squad.save_to_db()
-            return squad.json(),201
+            if FireBase.add_player_to_tournament_chat(data['playerID'],data['clubID'],data['tournamentID']):
+                return { "squad": squad.json()}, 201
+            else:
+                squad.delete_from_db()
+                return { "message": "Squad creation failed due to error while adding player to rounament chat."}, 500
         except:
             traceback.print_exc()
             return {'message':'Internal server error, squad registration failed!'},500
@@ -36,8 +41,10 @@ class Squad(Resource):
         if not squad:
             return {'message':'player not found!'},404
         try:
-            squad.delete_from_db()
-            return {'message':'player deleted!'},200
+            if FireBase.remove_player_from_tournament_chat(data['playerID'],data['clubID'],data['tournamentID']):
+                squad.delete_from_db()
+                return {'message':'player deleted!'},200
+            return {'message':'Squad deletion failed due to cannot unsubscribe player from tournament chat!'},500
         except:
             traceback.print_exc()
             return {'message':'Internal server error, squad deletion failed!'},500

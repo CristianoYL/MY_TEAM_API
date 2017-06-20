@@ -4,7 +4,7 @@ class PlayerModel(db.Model):
     __tablename__ = 'player'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(50), db.ForeignKey('user.email'))
+    userID = db.Column(db.Integer, db.ForeignKey('user.id'))
     role = db.Column(db.String(30))
     firstName = db.Column(db.String(50))
     lastName = db.Column(db.String(50))
@@ -16,10 +16,10 @@ class PlayerModel(db.Model):
     leftFooted = db.Column(db.Boolean)
     avatar = db.Column(db.Integer)
 
-    def __init__(self,_id,email,role,firstName,lastName,displayName,
+    def __init__(self,_id,userID,role,firstName,lastName,displayName,
                 age,height,weight,phone,leftFooted,avatar):
         self.id = _id
-        self.email = email
+        self.userID = userID
         self.role = role
         self.firstName = firstName
         self.lastName = lastName
@@ -34,7 +34,7 @@ class PlayerModel(db.Model):
     def json(self):
         return {
             "id" : self.id,
-            "email" : self.email,
+            "userID" : self.userID,
             "role" : self.role,
             "firstName" : self.firstName,
             "lastName" : self.lastName,
@@ -52,8 +52,8 @@ class PlayerModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find_by_email(cls,email):
-        return cls.query.filter_by(email=email).first()
+    def find_by_user(cls,userID):
+        return cls.query.filter_by(userID=userID).first()
 
     @classmethod
     def find_by_id(cls,_id):

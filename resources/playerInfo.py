@@ -52,10 +52,10 @@ class PlayerInfoByID(Resource):
         return playerInfo, 200
 
 
-class PlayerInfoByEmail(Resource):
+class PlayerInfoByUser(Resource):
     @classmethod
-    def get(cls, email):    # get player info by email
-        player = PlayerModel.find_by_email(email)
+    def get(cls, userID):    # get player info by userID
+        player = PlayerModel.find_by_user(userID)
         if not player:
             return {'message': 'Player info not found'}, 404
 

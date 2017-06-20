@@ -6,14 +6,14 @@ from flask_jwt import JWT, jwt_required
 from security import authenticate, identity
 
 from resources.user import User,UserUpdate
-from resources.player import PlayerByEmail,PlayerByID,PlayerList,PlayerRegistration
-from resources.playerInfo import PlayerInfoByEmail,PlayerInfoByID,PlayerClubInfo
+from resources.player import PlayerByUser,PlayerByToken,PlayerByID,PlayerList,PlayerRegistration
+from resources.playerInfo import PlayerInfoByUser,PlayerInfoByID,PlayerClubInfo
 from resources.clubInfo import ClubInfoByID
 from resources.club import Club,ClubByID,ClubByName,ClubRegistration
 from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub,TournamentRegistration,TournamentManagement
 from resources.squad import Squad,SquadByClub,SquadTotal
 from resources.stats import Stats,StatsList,StatsByPlayer,StatsByClubPlayer,StatsByTournamentClub
-from resources.member import Member,MemberByPlayer,MemberByClub,MemberList,MemberRequest
+from resources.member import Member,MemberByPlayer,MemberByClub,MemberList,MemberRequest,MemberPriority
 from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,ResultByTournamentClub
 from resources.chat import TournamentChat,ClubChat,PrivateChat,Chat,ChatManager
 from resources.location import Location, LocationByClub
@@ -27,9 +27,9 @@ api = Api(app)
 
 # comment the following section if running on Heroku
 ###############################
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 ###############################
 
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
@@ -37,12 +37,13 @@ jwt = JWT(app,authenticate,identity)    #set up '/auth'
 api.add_resource(User,'/user')
 api.add_resource(UserUpdate,'/user/password')
 
-api.add_resource(PlayerByEmail,'/player/email/<string:email>')
+api.add_resource(PlayerByUser,'/player/user/<int:userID>')
+api.add_resource(PlayerByToken,'/player/token')
 api.add_resource(PlayerByID,'/player/id/<string:playerID>')
 api.add_resource(PlayerRegistration,'/player/club/<string:clubID>')
 api.add_resource(PlayerList,'/player')
 
-api.add_resource(PlayerInfoByEmail, '/player_info/email/<string:email>')
+api.add_resource(PlayerInfoByUser, '/player_info/user/<int:userID>')
 api.add_resource(PlayerInfoByID, '/player_info/id/<string:playerID>')
 api.add_resource(PlayerClubInfo, '/player_info/<string:playerID>/club/<string:clubID>')
 
@@ -75,6 +76,7 @@ api.add_resource(MemberByPlayer,'/member/player/<string:playerID>')
 api.add_resource(MemberByClub,'/member/club/<string:clubID>')
 api.add_resource(MemberList,'/member')
 api.add_resource(MemberRequest,'/member/request/<int:clubID>')
+api.add_resource(MemberPriority,'/member/manage/club/<int:clubID>/player/<int:playerID>/promote/<string:isPromotion>')
 
 api.add_resource(Result,'/result')
 api.add_resource(ResultByClub,'/result/club/<string:clubID>')

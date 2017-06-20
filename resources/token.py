@@ -11,6 +11,9 @@ class Token(Resource):
 
     @classmethod
     def get(cls,playerID): # get token by playerID
+        if playerID == 0: # get all tokens
+            return {"tokens":[token.json() for token in TokenModel.find_all()]},200
+        # else get specified player token
         token = TokenModel.find_token_by_player_id(playerID)
         if token:   # if token already exists, means it's an update
             return { "token" : token.json() }, 200

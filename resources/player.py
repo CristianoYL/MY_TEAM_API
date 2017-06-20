@@ -1,15 +1,16 @@
 import traceback
 from flask_restful import Resource,reqparse
-from flask_jwt import jwt_required
+from flask_jwt import jwt_required,current_identity
 from datetime import date
 from db import db
 
 from models.player import PlayerModel
+from models.user import UserModel
 from models.member import MemberModel
 from models.token import TokenModel
 
-class PlayerByEmail(Resource):
-    #(id INTEGERPRIMARY KEY, email text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
+class PlayerByUser(Resource):
+    #(id INTEGERPRIMARY KEY, userID text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
     parser = reqparse.RequestParser()
     parser.add_argument('role', type=str, required=True,help="The player's role cannot be blank.")
     parser.add_argument('firstName', type=str, required=True, help="The player's firtname cannot be blank.")
@@ -22,22 +23,22 @@ class PlayerByEmail(Resource):
     parser.add_argument('leftFooted', type=bool, required=False)
     parser.add_argument('avatar', type=int, required=False)
 
-    def get(self,email):
-        player = PlayerModel.find_by_email(email)
+    def get(self,userID):
+        player = PlayerModel.find_by_user(userID)
         if player:
             return player.json(), 200
 
         return {'message': 'player not found'}, 404
 
-    def post(self,email):     #create player
-        player = PlayerModel.find_by_email(email)  # check if already exists
+    def post(self,userID):     #create player
+        player = PlayerModel.find_by_user(userID)  # check if already exists
         if player:
-            return {'message': 'player <{}> already exists'.format(email)}, 400
+            return {'message': 'player <uid:{}> already exists'.format(userID)}, 400
         # if not exist, proceed to create
         data = self.parser.parse_args()
         if not data['displayName']:
             data['displayName'] = data['firstName'] + ' ' + data['lastName']
-        player = PlayerModel(None,email,**data)
+        player = PlayerModel(None,userID,**data)
         try:        # try to insert
             player.save_to_db()
         except:
@@ -45,10 +46,10 @@ class PlayerByEmail(Resource):
             return {'message':'Internal server error, player creation failed.'},500
         return player.json(),201 # echo the created player info
 
-    def delete(self,email):     #delete player
-        player = PlayerModel.find_by_email(email)  # check if already exists
+    def delete(self,userID):     #delete player
+        player = PlayerModel.find_by_user(userID)  # check if exists
         if player is None:
-            return {'message': "player <{}> doesn't exist".format(email)}, 404
+            return {'message': "player<uid:{}> doesn't exist".format(userID)}, 404
         # if exists, proceed to delete
         try:        # try to delete
             player.delete_from_db()
@@ -56,16 +57,16 @@ class PlayerByEmail(Resource):
             traceback.print_exc()
             return {'message':'Internal server error, player deletion failed.'},500
 
-        return {'message':'player deleted successfully!'.format(email)},200
+        return {'message':'player<uid:{}> deleted successfully!'.format(userID)},200
 
-    def put(self,email):     #update player
+    def put(self,userID):     #update player
         data = self.parser.parse_args()
         is_new_player = False
 
-        player = PlayerModel.find_by_email(email)  # check if already exists
+        player = PlayerModel.find_by_user(userID)  # check if already exists
 
         if player is None:  # if player doesn't exist
-            player = PlayerModel(None,email,**data)    # create a player first
+            player = PlayerModel(None,userID,**data)    # create a player first
             is_new_player = True
         else:
             player.role = data['role']
@@ -97,10 +98,52 @@ class PlayerByEmail(Resource):
             return player.json(),200
 
 
+class PlayerByToken(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('role', type=str, required=True,help="The player's role cannot be blank.")
+    parser.add_argument('firstName', type=str, required=True, help="The player's firtname cannot be blank.")
+    parser.add_argument('lastName', type=str, required=True, help="The player's lastname cannot be blank.")
+    parser.add_argument('displayName', type=str, required=False)
+    parser.add_argument('age', type=int, required=False)
+    parser.add_argument('height',type=float, required=False)
+    parser.add_argument('weight',type=float, required=False)
+    parser.add_argument('phone', type=str, required=False)
+    parser.add_argument('leftFooted', type=bool, required=False)
+    parser.add_argument('avatar', type=int, required=False)
+
+    @jwt_required()
+    def get(self):
+        user = current_identity
+        player = PlayerModel.find_by_user(user.id)
+        if player:
+            return player.json(), 200
+
+        return {'message': 'player not found'}, 404
+
+    @jwt_required()
+    def post(self):     #create player
+        user = current_identity
+        player = PlayerModel.find_by_user(user.id)  # check if already exists
+        if player:
+            return {'message': 'player <uid:{}> already exists'.format(user.id)}, 400
+        # if not exist, proceed to create
+        data = self.parser.parse_args()
+        if not data['displayName']:
+            data['displayName'] = data['firstName'] + ' ' + data['lastName']
+        player = PlayerModel(None,user.id,**data)
+        try:        # try to insert
+            player.save_to_db()
+        except:
+            traceback.print_exc()
+            return {'message':'Internal server error, player creation failed.'},500
+        return player.json(),201 # echo the created player info
+
+
 class PlayerByID(Resource):
 
     parser = reqparse.RequestParser()
-    parser.add_argument('email', type=str, required=False)
+    parser.add_argument('userID', type=str, required=False)
     parser.add_argument('role', type=str, required=False)
     parser.add_argument('firstName', type=str, required=False)
     parser.add_argument('lastName', type=str, required=False)
@@ -196,7 +239,7 @@ class PlayerRegistration(Resource):
     parser.add_argument('leftFooted', type=bool, required=False)
     parser.add_argument('avatar', type=int, required=False)
 
-    def post(self,clubID): # create a new player in this club
+    def post(self,clubID): # create a temp player in this club
         data = self.parser.parse_args()
 
         # check full name

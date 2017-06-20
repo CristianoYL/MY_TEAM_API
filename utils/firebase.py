@@ -56,7 +56,7 @@ class FireBase:
         }
         payload = {
             "data": data,
-            "to": "/topics/club_{}tournament_{}".format(clubID,tournamentID)
+            "to": "/topics/club_{}_tournament_{}".format(clubID,tournamentID)
         }
         res = requests.post(cls.push_url,
                             headers = cls.header,
@@ -122,8 +122,41 @@ class FireBase:
         token = TokenModel.find_token_by_player_id(playerID)
         if token:
             print(token.json())
-            url = "https://iid.googleapis.com/iid/v1/{}}/rel/topics/club_{}tournament_{}".format(token.instanceToken,clubID,tournamentID)
+            url = "https://iid.googleapis.com/iid/v1/{}}/rel/topics/club_{}_tournament_{}".format(token.instanceToken,clubID,tournamentID)
             res = requests.post(url, headers=cls.header)
+            if res.status_code == 200:
+                return True
+        return False
+
+    # unsubscribe player to club chat topic
+    @classmethod
+    def remove_player_from_club_chat(cls,playerID,clubID):
+        print("remove player<{}> from club<{}> chat.".format(playerID,clubID))
+        token = TokenModel.find_token_by_player_id(playerID)
+        if token:
+            print(token.json())
+            url = "https://iid.googleapis.com/iid/v1:batchRemove"
+            payload = {
+                "to": "/topics/club_{}".format(clubID),
+                "registration_tokens": [token.instanceToken]
+            }
+            res = requests.post(url, headers=cls.header,data=json.dumps(payload))
+            if res.status_code == 200:
+                return True
+        return False
+
+    # subscribe player to tournament chat topic
+    @classmethod
+    def remove_player_from_tournament_chat(cls,playerID,clubID,tournamentID):
+        token = TokenModel.find_token_by_player_id(playerID)
+        if token:
+            print(token.json())
+            url = "https://iid.googleapis.com/iid/v1:batchRemove"
+            payload = {
+                "to": "/topics/club_{}_tournament_{}".format(clubID,tournamentID),
+                "registration_tokens": [token.instanceToken]
+            }
+            res = requests.post(url, headers=cls.header,data=json.dumps(payload))
             if res.status_code == 200:
                 return True
         return False

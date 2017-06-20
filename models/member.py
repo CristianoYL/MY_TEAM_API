@@ -10,6 +10,11 @@ class MemberModel(db.Model):
     priority = db.Column(db.Integer)
     # priority: 0-applicant,1-member, 2-admin, 3-leader
 
+    priority_applicant = 0
+    priority_regular = 1
+    priority_cocap = 2
+    priority_captain = 3
+
     def __init__(self,clubID,playerID,memberSince,isActive,priority):
         self.clubID = clubID
         self.playerID = playerID

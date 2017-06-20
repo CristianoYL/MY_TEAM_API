@@ -93,12 +93,14 @@ class TournamentRegistration(Resource):
     parser.add_argument('name', type=str, required=True,help="Club name cannot be blank.")
     parser.add_argument('info', type=str, required=True, help="Please add some description about this club.")
 
-    # 1) create a tournament
-    # 2) include the player and club into the squad
-    # 3) create stats for the player
-    def post(self,clubID,playerID): # create a tournament
-        data = self.parser.parse_args()
+    def post(self,clubID,playerID): # player creates a tournament
+        # work flow:
+        # 1) create a tournament
+        # 2) include the player and club into the squad
+        # 3) create stats for the player
+        # 4) subscribe the player to the tournament chat topic
 
+        data = self.parser.parse_args()
         # step 1: create tournament
         tournaments = TournamentModel.find_by_name(data['name'])
         if tournaments.first(): # if tournament with same name exists, let the user know
@@ -120,23 +122,23 @@ class TournamentRegistration(Resource):
         if squad:   # roll back
             try:    # delete tournament as well
                 tournament.delete_from_db()
-                traceback.print_exc()
-                return {"message" : "Internal server error! Squad info already exists."}, 400
+                return {"message" : "Squad info already exists. Failed to create tournament. Roll back."}, 400
             except:
                 traceback.print_exc()
-                return {"message" : "Internal server error! Roll back error."}, 500
+                return {"message" : "Squad info already exists. Failed to create tournament. Roll back error."}, 500
 
         try:    # create squad
+            # assign 0 as the default kit number
             squad = SquadModel(tournament.id,clubID,playerID,0)
             squad.save_to_db()
         except: # if create squad failed, roll back
+            traceback.print_exc()
             try:    # delete tournament as well
                 tournament.delete_from_db()
-                traceback.print_exc()
                 return {"message" : "Internal server error! Failed to create squad info."}, 500
             except:
                 traceback.print_exc()
-                return {"message" : "Internal server error! Roll back error."}, 500
+                return {"message" : "Internal server error! Roll back error<1>."}, 500
 
         # step 3: create stats:
         stats = StatsModel.find_stats(tournament.id,clubID,playerID)
@@ -148,27 +150,36 @@ class TournamentRegistration(Resource):
                 return {"message" : "Internal server error! Stats info already exists."}, 400
             except:
                 traceback.print_exc()
-                return {"message" : "Internal server error! Roll back error."}, 500
+                return {"message" : "Internal server error! Roll back error<2>."}, 500
 
         try: # create stats
             stats = StatsModel(tournament.id, clubID, playerID, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
             stats.save_to_db()
         except: # roll back
+            traceback.print_exc()
             try:    # delete tournament as well
                 tournament.delete_from_db()
                 squad.delete_from_db
-                traceback.print_exc()
                 return {"message" : "Internal server error! Failed to create stats info."}, 500
             except:
                 traceback.print_exc()
-                return {"message" : "Internal server error! Roll back error."}, 500
-
-        return {
-            "message" : "Tournament and Squad created!",
-            "tournament" : tournament.json(),
-            "squad" : squad.json(),
-            "stats" : stats.json()
-            }, 201
+                return {"message" : "Internal server error! Roll back error<3>."}, 500
+        # step 4: add player to tournament chat topic
+        if FireBase.add_player_to_tournament_chat(squad.playerID,squad.clubID,squad.tournamentID):
+            return {
+                "message" : "Tournament and Squad created!",
+                "tournament" : tournament.json(),
+                "squad" : squad.json(),
+                "stats" : stats.json()
+                }, 201
+        try:    # else subscribtion failed, delete all stuffs
+            tournament.delete_from_db()
+            squad.delete_from_db
+            stats.delete_from_db()
+            return {"message" : "Internal server error! Failed to add to tournament chat. Roll back."}, 500
+        except:
+            traceback.print_exc()
+            return {"message" : "Internal server error! Roll back error<4>."}, 500
 
 
 class TournamentManagement(Resource):
@@ -191,7 +202,9 @@ class TournamentManagement(Resource):
                     new_squad.save_to_db()
                 except:
                     traceback.print_exc()
-                    return {"message":"Error when creating squad info"}
+                    return {"message":"Error when creating squad info"},500
+            # else, member is already in the squad, proceed
+
             # try to create stats
             if not StatsModel.find_stats(tournamentID,clubID,playerID):
                 new_stats = StatsModel(tournamentID,clubID,playerID,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
@@ -199,6 +212,11 @@ class TournamentManagement(Resource):
                     new_stats.save_to_db()
                 except:
                     traceback.print_exc()
-                    return {"message":"Error when creating stats info"}
+                    return {"message":"Error when creating stats info"},500
+            # else stats already exists (could be a previous squad member that got kicked)
+
+            # add player to tournament chat topic
+            if not FireBase.add_player_to_tournament_chat(playerID,clubID,tournamentID):
+                return {"message" : "Internal server error! Failed to add player<{}> to tournament chat.".format(playerID)}, 500
 
         return {"message":"squads created!"},201

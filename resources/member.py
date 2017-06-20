@@ -46,7 +46,7 @@ class Member(Resource):
             member = MemberModel(clubID,playerID,memberSince,data['isActive'],data['priority'])
             member.save_to_db()
             if FireBase.add_player_to_club_chat(playerID,clubID):
-                return member.json() ,201
+                return { "member": member.json() }, 201
             else:
                 member.delete_from_db()
                 return {'message':'Internal server error, failed to add player to club chat.'} ,500
@@ -59,8 +59,11 @@ class Member(Resource):
         member = MemberModel.find_club_player(clubID,playerID)
         if member:
             try:
-                member.delete_from_db()
-                return { "message": "Club member deleted."} ,200
+                if FireBase.remove_player_from_club_chat(playerID,clubID):
+                    member.delete_from_db()
+                    return { "message": "Club member deleted."} ,200
+                # else fail to remove from club chat, do not delete
+                return { "message": "Club member deletion failed."} ,500
             except:
                 traceback.print_exc()
                 return { "message": "Internal server error, club member deletion failed."} ,500
@@ -165,3 +168,57 @@ class MemberRequest(Resource):  # deal with request to join club
         except:
             traceback.print_exc()
             return { "message": "Internal server error, create club member failed."} ,500
+
+class MemberPriority(Resource):  # deal with request to join club
+
+    # promote/demote a member or accept/reject an applicant
+    def post(self,clubID,playerID,isPromotion):
+        if isPromotion.lower() == 'true':
+            isPromotion = True
+        elif isPromotion.lower() == 'false':
+            isPromotion = False
+        else:
+            return { "message": "Please use boolean value(true/false) for the isPromotion field." }, 400
+        print(isPromotion)
+        member = MemberModel.find_club_player(clubID,playerID)
+        if not member:
+            return {"message":"Member not found!"}, 404
+        if isPromotion: # if promote member/accept applicant
+            if member.priority == MemberModel.priority_captain: # check if is already captain
+                return {"message":"Promotion failed. This player is already captain in the club."}, 400
+            if member.priority == MemberModel.priority_applicant: # check if is applicant
+                if not FireBase.add_player_to_club_chat(playerID,clubID):
+                    print("Failed to add player to club chat topic!")
+            member.priority += 1    # promote priority
+            try:
+                member.save_to_db()
+                return { "member": member.json() },200
+            except:
+                traceback.print_exc()
+                return { "message": "Internal server error, promotion failed!" },500
+        # else demote member/ reject applicant
+        if member.priority == MemberModel.priority_applicant: # check if is applicant
+            try:    # reject applicant
+                member.delete_from_db()
+                return { "message": "Application denied!"},200
+            except:
+                traceback.print_exc()
+                return { "message": "Internal server error, rejecting application failed!"},500
+
+        if member.priority == MemberModel.priority_regular: # check if is regular member
+            try:    # kick member
+                member.delete_from_db()
+                if not FireBase.remove_player_from_club_chat(playerID,clubID):
+                    print("Failed to remove player from club chat topic!")
+                return { "message": "Player removed from club!"},200
+            except:
+                traceback.print_exc()
+                return { "message": "Internal server error, kicking member failed!"},500
+        # else demote member
+        member.priority -= 1    # demote priority
+        try:
+            member.save_to_db()
+            return { "member": member.json() },200
+        except:
+            traceback.print_exc()
+            return { "message": "Internal server error, demotion failed!" },500
