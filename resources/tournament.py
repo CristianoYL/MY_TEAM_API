@@ -5,6 +5,7 @@ from flask_jwt import jwt_required
 from models.tournament import TournamentModel
 from models.squad import SquadModel
 from models.stats import StatsModel
+from utils.firebase import FireBase
 
 class TournamentByID(Resource):
     # (id,name,info)
@@ -69,7 +70,6 @@ class Tournament(Resource):
         tournament = TournamentModel(None,data['name'],data['info'])
         try:
             tournament.save_to_db()
-
         except:
             traceback.print_exc()
             return {"message":"Internal server error, tournament creation failed."}, 500

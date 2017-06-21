@@ -58,7 +58,7 @@ api.add_resource(Tournament,'/tournament')
 api.add_resource(TournamentByID,'/tournament/id/<string:_id>')
 api.add_resource(TournamentByName,'/tournament/name/<string:name>')
 api.add_resource(TournamentByClub,'/tournament/club/<string:clubID>')
-api.add_resource(TournamentRegistration,'/tournament/club/<string:clubID>/player/<string:playerID>')
+api.add_resource(TournamentRegistration,'/tournament/club/<int:clubID>/player/<int:playerID>')
 api.add_resource(TournamentManagement,'/tournament/<string:tournamentID>/club/<string:clubID>')
 
 api.add_resource(Squad,'/squad')
