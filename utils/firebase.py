@@ -122,7 +122,7 @@ class FireBase:
         token = TokenModel.find_token_by_player_id(playerID)
         if token:
             print(token.json())
-            url = "https://iid.googleapis.com/iid/v1/{}}/rel/topics/club_{}_tournament_{}".format(token.instanceToken,clubID,tournamentID)
+            url = "https://iid.googleapis.com/iid/v1/{}/rel/topics/club_{}_tournament_{}".format(token.instanceToken,clubID,tournamentID)
             res = requests.post(url, headers=cls.header)
             if res.status_code == 200:
                 return True

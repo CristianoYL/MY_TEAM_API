@@ -26,8 +26,10 @@ class TournamentChat(Resource):
         except:
             traceback.print_exc()
             return {'message':'failed to store chat message'},500
-        return {'chat':chat.json()},201
-
+        # notify club members of the new chat message
+        if FireBase.send_tournament_chat_notification(clubID,tournamentID):
+            return {'chat':chat.json()},201
+        return {'message':"Internal server error, failed to send push notification"},500
 
 class ClubChat(Resource):
 
@@ -72,7 +74,9 @@ class PrivateChat(Resource):
         except:
             traceback.print_exc()
             return {'message':'failed to store chat message'},500
-        return {'chat':chat.json()},201
+        if FireBase.send_private_chat_notification(data['senderID'],receiverID):
+            return {'chat':chat.json()},201
+        return {'message':"Internal server error, failed to send push notification"},500
 
 
 class Chat(Resource):
