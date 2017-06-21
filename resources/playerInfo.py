@@ -1,5 +1,5 @@
 from flask_restful import Resource
-
+from flask_jwt import jwt_required,current_identity
 
 from models.player import PlayerModel
 from models.member import MemberModel
@@ -52,15 +52,17 @@ class PlayerInfoByID(Resource):
         return playerInfo, 200
 
 
-class PlayerInfoByUser(Resource):
+class PlayerInfoByToken(Resource):
+
     @classmethod
-    def get(cls, userID):    # get player info by userID
-        player = PlayerModel.find_by_user(userID)
+    @jwt_required()
+    def get(cls):    # get player info by jwt
+        user = current_identity
+        player = PlayerModel.find_by_user(user.id)
         if not player:
             return {'message': 'Player info not found'}, 404
 
         playerID = player.id
-
         return PlayerInfoByID.get(playerID)
 
 class PlayerClubInfo(Resource):

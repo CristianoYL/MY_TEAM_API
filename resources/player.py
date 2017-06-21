@@ -7,6 +7,7 @@ from db import db
 from models.player import PlayerModel
 from models.user import UserModel
 from models.member import MemberModel
+from models.squad import SquadModel
 from models.token import TokenModel
 
 class PlayerByUser(Resource):
@@ -113,13 +114,25 @@ class PlayerByToken(Resource):
     parser.add_argument('avatar', type=int, required=False)
 
     @jwt_required()
-    def get(self):
+    def get(self):  # use jwt to retrive player's data and participated chat topics
         user = current_identity
+        # get player
         player = PlayerModel.find_by_user(user.id)
-        if player:
-            return player.json(), 200
+        if not player:
+            return {'message': 'player not found'}, 404
+        topics = []
+        # get club chat topics
+        for member in MemberModel.find_by_player(player.id):
+            topics.append('club_{}'.format(member.clubID))
+        # get tournament chat topics
+        for squad in SquadModel.find_by_player_id(player.id):
+            topics.append('club_{}_tournament_{}'.format(squad.clubID,squad.tournamentID))
+        return {
+                    'player': player.json(),
+                    'topics': topics
+                }, 200
 
-        return {'message': 'player not found'}, 404
+
 
     @jwt_required()
     def post(self):     #create player

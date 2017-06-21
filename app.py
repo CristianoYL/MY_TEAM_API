@@ -7,7 +7,7 @@ from security import authenticate, identity
 
 from resources.user import User,UserUpdate
 from resources.player import PlayerByUser,PlayerByToken,PlayerByID,PlayerList,PlayerRegistration
-from resources.playerInfo import PlayerInfoByUser,PlayerInfoByID,PlayerClubInfo
+from resources.playerInfo import PlayerInfoByToken,PlayerInfoByID,PlayerClubInfo
 from resources.clubInfo import ClubInfoByID
 from resources.club import Club,ClubByID,ClubByName,ClubRegistration
 from resources.tournament import Tournament,TournamentByID,TournamentByName,TournamentByClub,TournamentRegistration,TournamentManagement
@@ -43,7 +43,7 @@ api.add_resource(PlayerByID,'/player/id/<string:playerID>')
 api.add_resource(PlayerRegistration,'/player/club/<string:clubID>')
 api.add_resource(PlayerList,'/player')
 
-api.add_resource(PlayerInfoByUser, '/player_info/user/<int:userID>')
+api.add_resource(PlayerInfoByToken, '/player_info/token')
 api.add_resource(PlayerInfoByID, '/player_info/id/<string:playerID>')
 api.add_resource(PlayerClubInfo, '/player_info/<string:playerID>/club/<string:clubID>')
 
