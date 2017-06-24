@@ -179,7 +179,11 @@ class MemberPriority(Resource):  # deal with request to join club
             isPromotion = False
         else:
             return { "message": "Please use boolean value(true/false) for the isPromotion field." }, 400
-        print(isPromotion)
+        # try to find club
+        club = ClubModel.find_by_id(clubID)
+        if not club:
+            return {'message': 'Club<ID:{}> not found!'.format(clubID)},404
+
         member = MemberModel.find_club_player(clubID,playerID)
         if not member:
             return {"message":"Member not found!"}, 404
@@ -189,6 +193,13 @@ class MemberPriority(Resource):  # deal with request to join club
             if member.priority == MemberModel.priority_applicant: # check if is applicant
                 if not FireBase.add_player_to_club_chat(playerID,clubID):
                     print("Failed to add player to club chat topic!")
+                # add player to club chat succedded
+                notification = {
+                    "title": "Club application accepted.",
+                    "body": "You are now a member of {}!".format(club.name)
+                }
+                # send a notification to the applicant
+                FireBase.send_notification(notification,None,playerID)
             member.priority += 1    # promote priority
             try:
                 member.save_to_db()

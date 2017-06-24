@@ -24,6 +24,25 @@ class FireBase:
                             data = json.dumps(payload))
         return res
 
+    @classmethod
+    def send_notification(cls,notification,data,receiverID):
+        token = TokenModel.find_token_by_player_id(receiverID)
+        if not token:
+            return False
+        payload = {
+            "notification": notification,
+            "data": data,
+            "to": token.instanceToken
+        }
+        print("push notification to player<ID:{}>".format(receiverID))
+        res = requests.post(cls.push_url,
+                            headers = cls.header,
+                            data = json.dumps(payload))
+        if res.status_code == 200:
+            return True
+        print(res)
+        return False
+
     # send push notification for club chat
     @classmethod
     def send_club_chat_notification(cls,clubID):
@@ -33,9 +52,11 @@ class FireBase:
             "content": "tap here to view"
         }
         payload = {
+            "collapse_key" : "chat",
             "data": data,
             "to": "/topics/club_{}".format(clubID)
         }
+        print("notifying club members")
         res = requests.post(cls.push_url,
                             headers = cls.header,
                             data = json.dumps(payload))
@@ -55,9 +76,11 @@ class FireBase:
             "content": "tap here to view"
         }
         payload = {
+            "collapse_key" : "chat",
             "data": data,
             "to": "/topics/club_{}_tournament_{}".format(clubID,tournamentID)
         }
+        print("notifying tournament squads")
         res = requests.post(cls.push_url,
                             headers = cls.header,
                             data = json.dumps(payload))
@@ -78,28 +101,22 @@ class FireBase:
             return False
         # try to push to sender
         data = {
-            "playerID": senderID,
+            "senderID": senderID,
+            "receiverID": receiverID,
             "title": "Private chat message",
             "content": "tap here to view"
         }
         payload = {
+            "collapse_key" : "chat",
             "data": data,
-            "to": sender_token
+            "registration_ids": [sender_token, receiver_token]
         }
-        res = requests.post(cls.push_url,
-                            headers = cls.header,
-                            data = json.dumps(payload))
-        if res.status_code != 200:
-            return False
-        # try to push to receiver
-        data['playerID'] = receiverID
-        payload['to'] = receiver_token
+        print("notifying private chaters")
         res = requests.post(cls.push_url,
                             headers = cls.header,
                             data = json.dumps(payload))
         if res.status_code == 200:
             return True
-
         print(res)
         return False
 
