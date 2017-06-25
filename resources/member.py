@@ -194,9 +194,11 @@ class MemberPriority(Resource):  # deal with request to join club
                 if not FireBase.add_player_to_club_chat(playerID,clubID):
                     print("Failed to add player to club chat topic!")
                 # add player to club chat succedded
+                # use local resources to displlay the notification
                 notification = {
-                    "title": "Club application accepted.",
-                    "body": "You are now a member of {}!".format(club.name)
+                    "title_loc_key": "fcm_club_application_approved",
+                    "body_loc_key": "fcm_club_application_approved_detail",
+                    "body_loc_args": club.name
                 }
                 # send a notification to the applicant
                 FireBase.send_notification(notification,None,playerID)
