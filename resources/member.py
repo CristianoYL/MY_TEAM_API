@@ -198,7 +198,7 @@ class MemberPriority(Resource):  # deal with request to join club
                 notification = {
                     "title_loc_key": "fcm_club_application_approved",
                     "body_loc_key": "fcm_club_application_approved_detail",
-                    "body_loc_args": club.name
+                    "body_loc_args": [club.name]
                 }
                 # send a notification to the applicant
                 FireBase.send_notification(notification,None,playerID)

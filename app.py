@@ -99,4 +99,4 @@ api.add_resource(Token,'/token/player/<int:playerID>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.12',port = 5000,debug=True)
+    app.run(host = '192.168.1.5',port = 5000,debug=True)

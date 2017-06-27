@@ -11,6 +11,11 @@ class FireBase:
         'Authorization': 'key={}'.format(server_id),
         'Content-Type': 'application/json'
     }
+    default_notification = {
+        "icon": "ic_menu_club",
+        "color": "#007734",
+        "sound":"default"
+    }
     push_url = "https://fcm.googleapis.com/fcm/send"
 
     @classmethod
@@ -29,15 +34,19 @@ class FireBase:
         token = TokenModel.find_token_by_player_id(receiverID)
         if not token:
             return False
+        temp = cls.default_notification.copy()
+        temp.update(notification)
         payload = {
-            "notification": notification,
+            "notification": temp,
             "data": data,
             "to": token.instanceToken
         }
         print("push notification to player<ID:{}>".format(receiverID))
+        print("push notification payload:{}>".format(json.dumps(payload)))
         res = requests.post(cls.push_url,
                             headers = cls.header,
                             data = json.dumps(payload))
+        print("result:{}"+res.text)
         if res.status_code == 200:
             return True
         print(res)
