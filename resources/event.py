@@ -16,7 +16,7 @@ class Event(Resource):
     parser.add_argument('longitude', type=str, required=True)
     parser.add_argument('eventTime', type=str, required=True)
 
-    datetime_format = '%Y-%m-%d %H:%M:%S'
+    datetime_format = '%Y-%m-%d %H:%M'
 
     def get(self):   # find all events
         return {'events':[event.json() for event in EventModel.find_all()]},200
@@ -28,7 +28,7 @@ class Event(Resource):
             eventTime = datetime.strptime(data['eventTime'],self.datetime_format)
         except ValueError:
             return {
-                "message": "Incorrect datetime format, should be YYYY-MM-DD HH:mm:ss"
+                "message": "Incorrect datetime format, should be YYYY-MM-DD HH:mm"
                 } ,400
         data['eventTime'] = eventTime
         event = EventModel(None,**data)
@@ -49,7 +49,7 @@ class EventByID(Resource):
     parser.add_argument('longitude', type=str, required=False)
     parser.add_argument('eventTime', type=str, required=False)
 
-    datetime_format = '%Y-%m-%d %H:%M:%S'
+    datetime_format = '%Y-%m-%d %H:%M'
     def get(self,id):   # find event by id
         event = EventModel.find_by_id(id)
         if not event:
@@ -76,7 +76,7 @@ class EventByID(Resource):
                 eventTime = datetime.strptime(data['eventTime'],self.datetime_format)
             except ValueError:
                 return {
-                    "message": "Incorrect datetime format, should be YYYY-MM-DD HH:mm:ss"
+                    "message": "Incorrect datetime format, should be YYYY-MM-DD HH:mm"
                     } ,400
             event.eventTime = eventTime
         try:
