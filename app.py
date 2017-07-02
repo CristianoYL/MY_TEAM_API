@@ -18,6 +18,7 @@ from resources.result import Result,ResultByClub, ResultByHome, ResultByAway,Res
 from resources.chat import TournamentChat,ClubChat,PrivateChat,Chat,ChatManager
 from resources.location import Location, LocationByClub
 from resources.token import Token
+from resources.event import Event,EventByID,EventByClub
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
@@ -95,8 +96,12 @@ api.add_resource(LocationByClub,'/location/club/<int:clubID>')
 
 api.add_resource(Token,'/token/player/<int:playerID>')
 
+api.add_resource(Event,'/event')
+api.add_resource(EventByID,'/event/<int:id>')
+api.add_resource(EventByClub,'/event/club/<int:clubID>')
+
 
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.5',port = 5000,debug=True)
+    app.run(host = '192.168.1.11',port = 5000,debug=True)

@@ -35,7 +35,7 @@ class Member(Resource):
                 try:
                     memberSince = datetime.strptime(data['memberSince'], '%Y-%m-%d')
                 except ValueError:
-                    return { "message": "Incorrect data format, should be YYYY-MM-DD"} ,400
+                    return { "message": "Incorrect date format, should be YYYY-MM-DD"} ,400
             # new member is active by default
             if data['isActive'] is None:
                 data['isActive'] = True

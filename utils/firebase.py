@@ -140,6 +140,7 @@ class FireBase:
             res = requests.post(url, headers=cls.header)
             if res.status_code == 200:
                 return True
+            print(res.text)
         return False
 
     # subscribe player to tournament chat topic
