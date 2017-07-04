@@ -21,16 +21,17 @@ from resources.token import Token
 from resources.event import Event,EventByID,EventByClub
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://jian_gao:jian_gao@db-test-postgres.cejeykpe1xig.us-east-1.rds.amazonaws.com/myteam"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
 
 # comment the following section if running on Heroku
 ###############################
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 ###############################
 
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
@@ -104,4 +105,4 @@ api.add_resource(EventByClub,'/event/club/<int:clubID>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.11',port = 5000,debug=True)
+    app.run(host = '0.0.0.0',port = 5000,debug=True)
