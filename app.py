@@ -4,6 +4,7 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 from flask_jwt import JWT, jwt_required
 from security import authenticate, identity
+import config
 
 from resources.user import User,UserUpdate
 from resources.player import PlayerByUser,PlayerByToken,PlayerByID,PlayerList,PlayerRegistration
@@ -21,9 +22,14 @@ from resources.token import Token
 from resources.event import Event,EventByID,EventByClub
 
 app = Flask(__name__)
+# Heroku DB url/SQlite url
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://jian_gao:jian_gao@db-test-postgres.cejeykpe1xig.us-east-1.rds.amazonaws.com/myteam"
-# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:dedicatedtomyundergrad@127.0.0.1:3306/myteam"
+
+# AWS DB url
+app.config['SQLALCHEMY_DATABASE_URI'] = config.aws_postgresql_url
+
+# Local MySQL url
+# app.config['SQLALCHEMY_DATABASE_URI'] = config.local_mysql_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
