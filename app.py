@@ -23,6 +23,7 @@ from resources.event import Event,EventByID,EventByClub
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://jian_gao:jian_gao@db-test-postgres.cejeykpe1xig.us-east-1.rds.amazonaws.com/myteam"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:dedicatedtomyundergrad@127.0.0.1:3306/myteam"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)

@@ -24,8 +24,12 @@ class ClubModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find_by_name(cls,name):
+    def find_by_name(cls,name): # use case sensitive exact matching
         return cls.query.filter_by(name=name)
+
+    @classmethod
+    def find_by_name_fuzzy(cls,name): # use case insensitive partial matching
+        return cls.query.filter(cls.name.ilike("%"+name+"%"))
 
     @classmethod
     def find_by_id(cls,_id):

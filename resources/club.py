@@ -49,7 +49,7 @@ class ClubByName(Resource):
     # (id,name,info)
 
     def get(self,name):
-        clubs = ClubModel.find_by_name(name)
+        clubs = ClubModel.find_by_name_fuzzy(name)
         return {'clubs':[club.json() for club in clubs]}, 200
 
 
