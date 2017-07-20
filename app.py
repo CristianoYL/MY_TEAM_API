@@ -20,27 +20,32 @@ from resources.chat import TournamentChat,ClubChat,PrivateChat,Chat,ChatManager
 from resources.location import Location, LocationByClub
 from resources.token import Token
 from resources.event import Event,EventByID,EventByClub
+from resources.avatar import Avatar
 
 app = Flask(__name__)
+####################### DB config ####################################
 # Heroku DB url/SQlite url
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite:///myteam.db')
 
 # AWS DB url
-app.config['SQLALCHEMY_DATABASE_URI'] = config.aws_postgresql_url
+# app.config['SQLALCHEMY_DATABASE_URI'] = config.aws_postgresql_url
 
 # Local MySQL url
-# app.config['SQLALCHEMY_DATABASE_URI'] = config.local_mysql_url
+# app.config['SQLALCHEMY_DATABASE_URI'] = config.local_mys_url
+######################################################################
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'myteam'
 api = Api(app)
 
 # comment the following section if running on Heroku
 ###############################
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 ###############################
 
+################ endpoints #############################################
 jwt = JWT(app,authenticate,identity)    #set up '/auth'
 
 api.add_resource(User,'/user')
@@ -108,8 +113,10 @@ api.add_resource(Event,'/event')
 api.add_resource(EventByID,'/event/<int:id>')
 api.add_resource(EventByClub,'/event/club/<int:clubID>')
 
+api.add_resource(Avatar,'/avatar/player/<int:playerID>')
+######################################################################
 
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '0.0.0.0',port = 5000,debug=True)
+    app.run(host = '192.168.1.11',port = 5000,debug=True)

@@ -14,7 +14,7 @@ class PlayerModel(db.Model):
     weight = db.Column(db.Float(precision=1))
     phone = db.Column(db.String(20))
     leftFooted = db.Column(db.Boolean)
-    avatar = db.Column(db.Integer)
+    avatar = db.Column(db.String(300))
 
     def __init__(self,_id,userID,role,firstName,lastName,displayName,
                 age,height,weight,phone,leftFooted,avatar):

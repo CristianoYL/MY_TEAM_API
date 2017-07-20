@@ -11,7 +11,7 @@ from models.squad import SquadModel
 from models.token import TokenModel
 
 class PlayerByUser(Resource):
-    #(id INTEGERPRIMARY KEY, userID text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar int)
+    #(id INTEGERPRIMARY KEY, userID text, firstName text, lastName text, displayName text, age int, height real, weight real, phone text, leftFooted boolean, avatar str)
     parser = reqparse.RequestParser()
     parser.add_argument('role', type=str, required=True,help="The player's role cannot be blank.")
     parser.add_argument('firstName', type=str, required=True, help="The player's firtname cannot be blank.")
@@ -22,7 +22,7 @@ class PlayerByUser(Resource):
     parser.add_argument('weight',type=float, required=False)
     parser.add_argument('phone', type=str, required=False)
     parser.add_argument('leftFooted', type=bool, required=False)
-    parser.add_argument('avatar', type=int, required=False)
+    parser.add_argument('avatar', type=str, required=False)
 
     def get(self,userID):
         player = PlayerModel.find_by_user(userID)
@@ -111,7 +111,7 @@ class PlayerByToken(Resource):
     parser.add_argument('weight',type=float, required=False)
     parser.add_argument('phone', type=str, required=False)
     parser.add_argument('leftFooted', type=bool, required=False)
-    parser.add_argument('avatar', type=int, required=False)
+    parser.add_argument('avatar', type=str, required=False)
 
     @jwt_required()
     def get(self):  # use jwt to retrive player's data and participated chat topics
@@ -166,7 +166,7 @@ class PlayerByID(Resource):
     parser.add_argument('weight',type=float, required=False)
     parser.add_argument('phone', type=str, required=False)
     parser.add_argument('leftFooted', type=bool, required=False)
-    parser.add_argument('avatar', type=int, required=False)
+    parser.add_argument('avatar', type=str, required=False)
 
     def get(self,playerID):
         player = PlayerModel.find_by_id(playerID)
@@ -250,7 +250,7 @@ class PlayerRegistration(Resource):
     parser.add_argument('weight',type=float, required=False)
     parser.add_argument('phone', type=str, required=False)
     parser.add_argument('leftFooted', type=bool, required=False)
-    parser.add_argument('avatar', type=int, required=False)
+    parser.add_argument('avatar', type=str, required=False)
 
     def post(self,clubID): # create a temp player in this club
         data = self.parser.parse_args()
