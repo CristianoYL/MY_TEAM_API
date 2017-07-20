@@ -31,7 +31,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL','sqlite://
 # app.config['SQLALCHEMY_DATABASE_URI'] = config.aws_postgresql_url
 
 # Local MySQL url
-# app.config['SQLALCHEMY_DATABASE_URI'] = config.local_mys_url
+# app.config['SQLALCHEMY_DATABASE_URI'] = config.local_mysql_url
 ######################################################################
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -119,4 +119,4 @@ api.add_resource(Avatar,'/avatar/player/<int:playerID>')
 if __name__ == '__main__' :
     from db import db
     db.init_app(app)
-    app.run(host = '192.168.1.11',port = 5000,debug=True)
+    app.run(host = '192.168.1.4',port = 5000,debug=True)
