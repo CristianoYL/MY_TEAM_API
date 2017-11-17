@@ -11,7 +11,7 @@ And you may use the Python command to install all the required dependencies easi
 pip install -r requirements.txt
 ```
 ## Secrets
-In order to deploy this service. You'll need to creat a ```config.py``` file in the root folder that includes these secret entries:
+In order to deploy this service. You'll need to create a ```config.py``` file in the root folder that includes these secret entries:
 ```
 # this file servers for AWS deployment or local testing
 # if you wish to deploy on other platforms, please modify this file and the accordingly imports in your code
