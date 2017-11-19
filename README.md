@@ -2,7 +2,7 @@
 This is a Flask Http server, which exposes a set of REST APIs to users. It provides service for football(well, you guys may call it soccer) team management. A sample Android app using this service can be found at [my other GitHub repo here.](https://github.com/CristianoYL/MY_TEAM_ANDROID)
 # Configurations
 ## Dependencies
-This service relies on serveral other services as well. For example, it uses [Flask_RESTful](https://flask-restful.readthedocs.io/en/latest/) for building REST APIs, [Flask_JWT](https://pythonhosted.org/Flask-JWT/) for tokenized authentication, [Flask_SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/) for databse interaction etc.
+This service relies on several other services as well. For example, it uses [Flask_RESTful](https://flask-restful.readthedocs.io/en/latest/) for building REST APIs, [Flask_JWT](https://pythonhosted.org/Flask-JWT/) for tokenized authentication, [Flask_SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/) for database interaction etc.
 
 A full dependency list could be found in the [requirement.txt file in this repo](https://github.com/CristianoYL/MY_TEAM_API/blob/master/requirements.txt)
 
@@ -31,4 +31,3 @@ local_mysql_url = "mysql+pymysql://<db username>:<db password>@<ip:port>/<db nam
 
 # API Reference
 A detailed API Reference can be found in the [API Reference.md file in this repo](https://github.com/CristianoYL/MY_TEAM_API/blob/master/API%20Reference.md)
-
