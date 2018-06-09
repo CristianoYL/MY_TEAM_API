@@ -1,5 +1,7 @@
-/__pycache__/
+__pycache__/
 *.pyc
 *.db
 venv/
 config.py
+.env
+static/
