@@ -1,6 +1,5 @@
 import traceback
 from flask_restful import Resource,reqparse
-from flask_jwt import jwt_required
 from datetime import date
 
 from models.club import ClubModel

@@ -1,9 +1,9 @@
 import traceback
-from flask_restful import Resource,reqparse
-from flask_jwt import jwt_required
+from flask_restful import Resource, reqparse
 
 from models.stats import StatsModel
 from utils.performance import GamePerformance
+
 
 class Stats(Resource):
     # (tournamentID, playerID, attendance, appearance, start, goal,
@@ -28,84 +28,84 @@ class Stats(Resource):
     parser.add_argument('cleanSheet', type=int, required=True, help="This field cannot be blank.")
     parser.add_argument('penaltySaved', type=int, required=True, help="This field cannot be blank.")
 
-    def get(self,tournamentID,clubID,playerID):  # get stats
-        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
+    def get(self, tournamentID, clubID, playerID):  # get stats
+        stats = StatsModel.find_stats(tournamentID, clubID, playerID)
         if not stats:
-            return {'message' : 'stats not found.'}, 404
+            return {'message': 'stats not found.'}, 404
         try:
             playerStats = {
-                'stats' : stats.json(),
-                'gamePerformance' : {
-                    "win" : 0,
-                    "draw" : 0,
-                    "loss" : 0,
+                'stats': stats.json(),
+                'gamePerformance': {
+                    "win": 0,
+                    "draw": 0,
+                    "loss": 0,
                 }
             }
 
-            gamePerformance = GamePerformance.get_player_tournament_performance(tournamentID,clubID,playerID)
+            gamePerformance = GamePerformance.get_player_tournament_performance(tournamentID, clubID, playerID)
             if gamePerformance:
                 playerStats['gamePerformance'] = gamePerformance
             return playerStats, 200
         except:
             traceback.print_exc()
-            return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500
+            return {'message': 'Internal Server Error. Cannot load player total stats.'}, 500
 
-    def post(self,tournamentID,clubID,playerID): # create a new stats
-        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
+    def post(self, tournamentID, clubID, playerID):  # create a new stats
+        stats = StatsModel.find_stats(tournamentID, clubID, playerID)
         if stats:
-            return {'message' : 'stats already exists.'}, 400
-        stats = StatsModel(tournamentID,clubID,playerID,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+            return {'message': 'stats already exists.'}, 400
+        stats = StatsModel(tournamentID, clubID, playerID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         try:
             stats.save_to_db()
             return stats.json(), 201
         except:
             traceback.print_exc()
-            return {'message' : 'Internal server error, create stats failed.'}, 500
+            return {'message': 'Internal server error, create stats failed.'}, 500
 
-    def delete(self,tournamentID,clubID,playerID): # delete a stats
-        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
+    def delete(self, tournamentID, clubID, playerID):  # delete a stats
+        stats = StatsModel.find_stats(tournamentID, clubID, playerID)
         if not stats:
-            return {'message' : 'stats not found.'}, 404
+            return {'message': 'stats not found.'}, 404
         try:
             stats.delete_from_db()
-            return {'message' : 'stats deleted.'}, 200
+            return {'message': 'stats deleted.'}, 200
         except:
             traceback.print_exc()
-            return {'message' : 'Internal server error, delete stats failed.'}, 500
+            return {'message': 'Internal server error, delete stats failed.'}, 500
 
-    def put(self,tournamentID,clubID,playerID):  # update an existing stats
-        stats = StatsModel.find_stats(tournamentID,clubID,playerID)
+    def put(self, tournamentID, clubID, playerID):  # update an existing stats
+        stats = StatsModel.find_stats(tournamentID, clubID, playerID)
         if not stats:
-            return {'message' : 'stats not found'}, 404
+            return {'message': 'stats not found'}, 404
 
         data = self.parser.parse_args()
-        vector = StatsModel(tournamentID,clubID,playerID,**data)
-        new_stats = StatsModel.get_updated_stats(stats,vector)
+        vector = StatsModel(tournamentID, clubID, playerID, **data)
+        new_stats = StatsModel.get_updated_stats(stats, vector)
 
         try:
             new_stats.save_to_db()
             return new_stats.json(), 200
         except:
             traceback.print_exc()
-            return {'message' : 'Internal server error, update stats failed.'}, 500
+            return {'message': 'Internal server error, update stats failed.'}, 500
 
 
 class StatsList(Resource):
 
     def get(self):
-        return {'stats':[stats.json() for stats in StatsModel.find_all()]},200
+        return {'stats': [stats.json() for stats in StatsModel.find_all()]}, 200
 
 
 class StatsByPlayer(Resource):
 
-    def get(self,playerID):
+    def get(self, playerID):
         try:
             playerStats = {
-                'stats' : StatsModel.find_player_total_stats(playerID),
-                'gamePerformance' : {
-                    "win" : 0,
-                    "draw" : 0,
-                    "loss" : 0,
+                'stats': StatsModel.find_player_total_stats(playerID),
+                'gamePerformance': {
+                    "win": 0,
+                    "draw": 0,
+                    "loss": 0,
                 }
             }
             gamePerformance = GamePerformance.get_player_total_performance(playerID)
@@ -114,69 +114,69 @@ class StatsByPlayer(Resource):
             return playerStats, 200
         except:
             traceback.print_exc()
-            return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500
+            return {'message': 'Internal Server Error. Cannot load player total stats.'}, 500
 
 
 class StatsByClubPlayer(Resource):
 
-    def get(self,clubID,playerID):
+    def get(self, clubID, playerID):
         try:
             playerStats = {
-                'stats' : StatsModel.find_club_player_stats(clubID,playerID),
-                'gamePerformance' : {
-                    "win" : 0,
-                    "draw" : 0,
-                    "loss" : 0,
+                'stats': StatsModel.find_club_player_stats(clubID, playerID),
+                'gamePerformance': {
+                    "win": 0,
+                    "draw": 0,
+                    "loss": 0,
                 }
             }
-            gamePerformance = GamePerformance.get_player_club_performance(clubID,playerID)
+            gamePerformance = GamePerformance.get_player_club_performance(clubID, playerID)
             if gamePerformance:
                 playerStats['gamePerformance'] = gamePerformance
             return playerStats, 200
         except:
             traceback.print_exc()
-            return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500
+            return {'message': 'Internal Server Error. Cannot load player total stats.'}, 500
 
 
 class StatsByTournamentPlayer(Resource):
 
-    def get(self,tournamentID,clubID,playerID):
+    def get(self, tournamentID, clubID, playerID):
         try:
             playerStats = {
-                'stats' : StatsModel.find_stats(tournamentID,clubID,playerID),
-                'gamePerformance' : {
-                    "win" : 0,
-                    "draw" : 0,
-                    "loss" : 0,
+                'stats': StatsModel.find_stats(tournamentID, clubID, playerID),
+                'gamePerformance': {
+                    "win": 0,
+                    "draw": 0,
+                    "loss": 0,
                 }
             }
-            gamePerformance = GamePerformance.get_player_tournament_performance(tournamentID,clubID,playerID)
+            gamePerformance = GamePerformance.get_player_tournament_performance(tournamentID, clubID, playerID)
             if gamePerformance:
                 playerStats['gamePerformance'] = gamePerformance
             return playerStats, 200
         except:
             traceback.print_exc()
-            return {'message' : 'Internal Server Error. Cannot load player total stats.'}, 500
+            return {'message': 'Internal Server Error. Cannot load player total stats.'}, 500
 
 
 class StatsByTournamentClub(Resource):
 
-    def get(self,tournamentID,clubID): # get club's total stats in this tournament
+    def get(self, tournamentID, clubID):  # get club's total stats in this tournament
         try:
             clubStats = {
-                'stats' : StatsModel.find_tournament_club_total_stats(tournamentID,clubID),
-                'gamePerformance' : {
-                    "win" : 0,
-                    "draw" : 0,
-                    "loss" : 0,
-                    "cleanSheet" : 0,
-                    "goalsConceded" : 0,
+                'stats': StatsModel.find_tournament_club_total_stats(tournamentID, clubID),
+                'gamePerformance': {
+                    "win": 0,
+                    "draw": 0,
+                    "loss": 0,
+                    "cleanSheet": 0,
+                    "goalsConceded": 0,
                 }
             }
-            gamePerformance = GamePerformance.get_club_tournament_performance(tournamentID,clubID)
+            gamePerformance = GamePerformance.get_club_tournament_performance(tournamentID, clubID)
             if gamePerformance:
                 clubStats['gamePerformance'] = gamePerformance
             return clubStats, 200
         except:
             traceback.print_exc()
-            return {'message' : 'Internal Server Error. Cannot load club tournament total stats.'}, 500
+            return {'message': 'Internal Server Error. Cannot load club tournament total stats.'}, 500

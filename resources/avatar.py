@@ -1,8 +1,9 @@
 import traceback, os
-from flask_restful import Resource,reqparse
+from flask_restful import Resource, reqparse
 from flask import redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
+
 
 class Avatar(Resource):
     parser = reqparse.RequestParser()
@@ -12,16 +13,15 @@ class Avatar(Resource):
     UPLOAD_FOLDER = ".\\static\\images\\avatar"
     AVATAR_PREFIX = "player_avatar_"
 
-
     @classmethod
-    def allowed_file(cls,filename):
+    def allowed_file(cls, filename):
         return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in cls.ALLOWED_EXTENSIONS
+               filename.rsplit('.', 1)[1].lower() in cls.ALLOWED_EXTENSIONS
 
-    def get(self,playerID):
-        return send_from_directory(self.UPLOAD_FOLDER,'{}{}.jpg'.format(self.AVATAR_PREFIX,playerID))
+    def get(self, playerID):
+        return send_from_directory(self.UPLOAD_FOLDER, '{}{}.jpg'.format(self.AVATAR_PREFIX, playerID))
 
-    def post(self,playerID):
+    def post(self, playerID):
         # check if the post request has the file part
         data = self.parser.parse_args()
         file = data['file']
@@ -33,5 +33,5 @@ class Avatar(Resource):
         if file and self.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(self.UPLOAD_FOLDER, filename))
-            return url_for('avatar',playerID=playerID),200
-        return {'message':'unknown error.'},500
+            return url_for('avatar', playerID=playerID), 200
+        return {'message': 'unknown error.'}, 500

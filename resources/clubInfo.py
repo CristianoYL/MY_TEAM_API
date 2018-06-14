@@ -10,27 +10,27 @@ from utils.performance import GamePerformance
 class ClubInfoByID(Resource):
     def get(self, clubID):
         clubInfo = {
-            "club" : None,
-            "tournaments" : [],
-            "member" : [],
-            "gamePerformance":{
-                "win" : 0,
-                "draw" : 0,
-                "loss" : 0,
+            "club": None,
+            "tournaments": [],
+            "member": [],
+            "gamePerformance": {
+                "win": 0,
+                "draw": 0,
+                "loss": 0,
             }
         }
 
         # get club basic info
         club = ClubModel.find_by_id(clubID)
         if not club:
-            return {"message" : "Club not found"}, 404
+            return {"message": "Club not found"}, 404
 
         clubInfo["club"] = club.json()
 
         # get tournaments attended by retrieving & iterating through squads
-        tours = set()   # store all distinct tournament IDs
+        tours = set()  # store all distinct tournament IDs
 
-        allPastSquads =  SquadModel.find_by_club_id(clubID)
+        allPastSquads = SquadModel.find_by_club_id(clubID)
         for squad in allPastSquads:
             tours.add(squad.tournamentID)
 
@@ -48,4 +48,4 @@ class ClubInfoByID(Resource):
         if gamePerformance:
             clubInfo["gamePerformance"] = gamePerformance
 
-        return {"clubInfo" : clubInfo},200
+        return {"clubInfo": clubInfo}, 200
